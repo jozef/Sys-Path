@@ -8,6 +8,13 @@ Sys::Path - get/configure system paths
 
 =head1 DESCRIPTION
 
+=head1 BUILD
+
+    PERL_MM_USE_DEFAULT=1 perl Build.PL \
+        --sp-prefix=/usr/local \
+        --sp-sysconfdir=/usr/local/etc \
+        --sp-localstatedir=/var/local
+
 =cut
 
 use warnings;
