@@ -13,6 +13,8 @@ Module::Build::SysPath - Module::Build subclass with Sys::Path ACTION_install
 
 =head1 DESCRIPTION
 
+A subclass of L<Module::Build>. See L<Sys::Path> for description and usage.
+
 =cut
 
 use warnings;
@@ -23,11 +25,23 @@ our $VERSION = '0.01';
 use base 'Module::Build';
 use Sys::Path;
 
+=head2 new
+
+Adds execution of L<Sys::Path/post_new> to L<Module::Build/new>.
+
+=cut
+
 sub new {
 	my $class = shift;
 	my $builder = $class->SUPER::new(@_);
 	return Sys::Path->post_new($builder);
 }
+
+=head2 ACTION_install
+
+Adds execution of L<Sys::Path/ACTION_post_install> to L<Module::Build/ACTION_install>.
+
+=cut
 
 sub ACTION_install {
 	my $builder = shift;

@@ -11,12 +11,9 @@ use strict;
 
 our $VERSION = '0.01';
 
-use 5.010;
-use feature 'state';
-
 use File::Spec;
 
-sub path_types {qw(
+sub _path_types {qw(
 	prefix
 	localstatedir
 	sysconfdir
@@ -30,11 +27,36 @@ sub path_types {qw(
 	state
 )};
 
-# sub names inspired by http://www.gnu.org/software/autoconf/manual/html_node/Installation-Directory-Variables.html#Installation-Directory-Variables
+=head1 PATHS
+
+=head2 prefix
+
+=head2 localstatedir
+
+=head2 sysconfdir
+
+=head2 datadir
+
+=head2 docdir
+
+=head2 cache
+
+=head2 log
+
+=head2 spool
+
+=head2 run
+
+=head2 lock
+
+=head2 state
+
+=cut
+
 sub prefix        { use Sys::Path; Sys::Path->find_distribution_root(__PACKAGE__); };
 sub localstatedir { __PACKAGE__->prefix };
-sub sysconfdir    { File::Spec->catdir(__PACKAGE__->prefix, 'etc') };
 
+sub sysconfdir { File::Spec->catdir(__PACKAGE__->prefix, 'etc') };
 sub datadir    { File::Spec->catdir(__PACKAGE__->prefix, 'share') };
 sub docdir     { File::Spec->catdir(__PACKAGE__->prefix, 'doc') };
 sub cache      { File::Spec->catdir(__PACKAGE__->localstatedir, 'cache') };

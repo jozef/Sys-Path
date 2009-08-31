@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Module::Build;
+use Sys::Path;
 
 my $builder_class = Module::Build->subclass(
     class => 'My::Builder',

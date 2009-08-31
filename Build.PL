@@ -41,7 +41,7 @@ my $builder = inc::MyBuilder->new(
     },
 );
 
-my @path_types = SysPathConfig->path_types;
+my @path_types = SysPathConfig->_path_types;
 $builder->notes('path_types' => join('|', @path_types));
 
 foreach my $path_type (@path_types) {

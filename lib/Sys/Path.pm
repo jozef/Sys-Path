@@ -22,11 +22,18 @@ Sys::Path - get/configure system paths
         ...
 
     use Module::Build;
+    use Sys::Path;
+    
     # update system paths during the installation
     my $builder_class = Module::Build->subclass(
         class => 'My::Builder',
         code => q{
             use Sys::Path;
+            sub new {
+                my $class = shift;
+                my $builder = $class->SUPER::new(@_);
+                return Sys::Path->post_new($builder);
+            }
             sub ACTION_install {
                 my $builder = shift;
                 $builder->SUPER::ACTION_install(@_);
@@ -38,6 +45,88 @@ Sys::Path - get/configure system paths
     my $builder = $builder_class->new(
         ...
 
+=head1 NOTE
+
+This is an experiment and lot of questions and concerns can come out about
+the paths configuration. L<Module::Build> integration and the naming. And as
+this is early version thinks may change. For these purposes there is a mailing
+list L<http://lists.meon.sk/mailman/listinfo/sys-path>.
+
+=head1 DESCRIPTION
+
+This module tries to solve the problem of working with data files, configuration files,
+images, logs, locks, ..., any non-F<*.pm> files within distribution tar-balls.
+The default paths for file locations are based on L<http://www.pathname.com/fhs/>
+(Filesystem Hierarchy Standard) if the Perl was installed in F</usr>. For
+all other non-standard Perl installations or systems the default prefix is
+the prefix of Perl it self. Still those are just defaults and can be changed
+during C<perl Build.PL> prompting. After L<Sys::Path> is configured and installed
+all modules using it can just read/use the paths set. In addition to the system
+wide L<SysPathConfig> this file (F<SysPathConfig.pm>) can be added to F<$HOME/.syspath/>
+folder in which case it has a preference over the system wide one.
+
+=head2 USAGE
+
+L<Sys::Path> primary usage is for module authors to allow them to find their
+data files as during development and testing but also when installed. How?
+Let's look at an example distribution L<Acme::SysPath> that needs a configuration
+file an image file and a template file. See the modules
+
+L<http://github.com/jozef/Acme-SysPath/blob/1a4b89e8239f55bee31b7f1c4fa3d69c8de7c3a4/lib/Acme/SysPath.pm>
+
+or L<Acme::SysPath>. It has path()+template()+image() functions. While working
+in the distribution tree:
+
+    Acme-SysPath$ perl -Ilib -MAcme::SysPath -le 'print Acme::SysPath->config, "\n", Acme::SysPath->template;'
+    /home/jozef/prog/Acme-SysPath/conf/acme-syspath.cfg
+    /home/jozef/prog/Acme-SysPath/share/acme-syspath/tt/index.tt2
+
+After install:
+
+    Acme-SysPath$ perl Build.PL && ./Build && ./Build test
+    Acme-SysPath$ sudo ./Build install
+    Copying lib/Acme/SysPath.pm -> blib/lib/Acme/SysPath.pm
+    Manifying blib/lib/Acme/SysPath.pm -> blib/libdoc/Acme::SysPath.3pm
+    Installing /usr/share/acme-syspath/tt/index.tt2
+    Installing /usr/share/acme-syspath/images/smile.ascii
+    Installing /usr/local/share/perl/5.10.0/Acme/SysPath.pm
+    Installing /usr/local/share/perl/5.10.0/Acme/SysPath/SysPathConfig.pm
+    Installing /usr/local/man/man3/Acme::SysPath::SysPathConfig.3pm
+    Installing /usr/local/man/man3/Acme::SysPath.3pm
+    Installing /etc/acme-syspath.cfg
+    Writing /usr/local/lib/perl/5.10.0/auto/Acme/SysPath/.packlist
+
+    Acme-SysPath$ cat /usr/local/share/perl/5.10.0/Acme/SysPath/SysPathConfig.pm
+    ...
+    sub prefix {'/usr'};
+    sub sysconfdir {'/etc'};
+    sub datadir {'/usr/share'};
+    ...
+    
+    ~$ perl -MAcme::SysPath -le 'print Acme::SysPath->config, "\n", Acme::SysPath->template;'
+    /etc/acme-syspath.cfg
+    /usr/share/acme-syspath/tt/index.tt2
+    
+    ~$ perl -MAcme::SysPath -le 'print Acme::SysPath->image;'
+    ... try your self :-P
+
+First step is to have a L<My::App::SysPathConfig>. Take one of:
+
+L<http://github.com/jozef/Acme-SysPath/blob/1a4b89e8239f55bee31b7f1c4fa3d69c8de7c3a4/lib/Acme/SysPath/SysPathConfig.pm>
+L<http://github.com/jozef/Sys-Path/blob/f4340cae8703ea4e8bd5c1619dbc72a2a9c44908/examples/Sys-Path-Example1/lib/Sys/Path/Example1/SysPathConfig.pm>
+
+Then keep the needed paths and set then to your distribution taste. (someone
+likes etc, someone likes F<cfg> or F<conf> or ...) Then replace the L<Module::Build>
+with L<Module::Build::SysPath>. And finally populate the F<etc/>, F<cfg/>,
+F<conf/>, F<share/>, F<doc/>, ...
+
+=head2 WHY?
+
+TODO for next version...
+
+=head2 HOW IT WORKS
+
+TODO for next version...
 
 =cut
 
@@ -91,7 +180,7 @@ sub ACTION_post_install {
     my $builder = shift;
     my $module  = shift || $builder->module_name;
 
-    my $path_types = join('|', $self->path_types);
+    my $path_types = join('|', $self->_path_types);
     
     # normalize module name (some people write - instead of ::) and add config level
     $module =~ s/-/::/g;
@@ -155,6 +244,12 @@ sub find_distribution_root {
     return File::Spec->catdir(@path);
 }
 
+=head2 post_new
+
+Function to be invoked after L<Module::Build/new>.
+
+=cut
+
 sub post_new {
     my $self    = shift;
     my $builder = shift;
@@ -171,7 +266,7 @@ sub post_new {
     
     my $distribution_root = $self->find_distribution_root($module);
     
-    foreach my $path_type ($module->path_types) {
+    foreach my $path_type ($module->_path_types) {
         my $sys_path = $module->$path_type;
         # skip prefix and localstatedir those are not really destination paths
         next
@@ -223,10 +318,15 @@ automatically be notified of progress on your bug as I make changes.
 
 =head1 SUPPORT
 
+=head2 Mailing list
+
+L<http://lists.meon.sk/mailman/listinfo/sys-path>
+
+=head2 The rest
+
 You can find documentation for this module with the perldoc command.
 
     perldoc Sys::Path
-
 
 You can also look for information at:
 
