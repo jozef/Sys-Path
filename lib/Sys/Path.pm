@@ -112,13 +112,13 @@ After install:
 
 First step is to have a L<My::App::SysPathConfig>. Take one of:
 
-L<http://github.com/jozef/Acme-SysPath/blob/1a4b89e8239f55bee31b7f1c4fa3d69c8de7c3a4/lib/Acme/SysPath/SysPathConfig.pm>
-L<http://github.com/jozef/Sys-Path/blob/f4340cae8703ea4e8bd5c1619dbc72a2a9c44908/examples/Sys-Path-Example1/lib/Sys/Path/Example1/SysPathConfig.pm>
+L<http://github.com/jozef/Acme-SysPath/blob/a4c28e33696a23445bc08aa985b5d26affbc6345/lib/Acme/SysPath/SysPathConfig.pm>
+L<http://github.com/jozef/Sys-Path/blob/c84b5406e96672b73b2f45680c8890aefb6ff41b/examples/Sys-Path-Example1/lib/Sys/Path/Example1/SysPathConfig.pm>
 
 Then keep the needed paths and set then to your distribution taste. (someone
 likes etc, someone likes F<cfg> or F<conf> or ...) Then replace the L<Module::Build>
-with L<Module::Build::SysPath>. And finally populate the F<etc/>, F<cfg/>,
-F<conf/>, F<share/>, F<doc/>, ...
+in F<Build.PL> with L<Module::Build::SysPath>. And finally populate the F<etc/>, F<cfg/>,
+F<conf/>, F<share/>, F<doc/>, ... with some useful content.
 
 =head2 WHY?
 
