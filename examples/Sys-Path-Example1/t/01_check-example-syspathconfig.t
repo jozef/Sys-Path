@@ -21,7 +21,7 @@ sub main {
 		'localstatedir' => [],
 		'sysconfdir'    => [ 'etc' ],
 		'datadir'       => [ 'share' ],
-		'docdir'        => [ 'share', 'doc' ],
+		'docdir'        => [ 'doc' ],
 		'cache'         => [ 'cache' ],
 		'log'           => [ 'log' ],
 		'spool'         => [ 'spool' ],

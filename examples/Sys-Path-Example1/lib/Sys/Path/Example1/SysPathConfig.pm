@@ -31,12 +31,12 @@ sub path_types {qw(
 )};
 
 # sub names inspired by http://www.gnu.org/software/autoconf/manual/html_node/Installation-Directory-Variables.html#Installation-Directory-Variables
-sub prefix        { use Sys::Path; Sys::Path->find_distribution_root(__PACKAGE__, __FILE__); };
+sub prefix        { use Sys::Path; Sys::Path->find_distribution_root(__PACKAGE__); };
 sub localstatedir { __PACKAGE__->prefix };
 sub sysconfdir    { File::Spec->catdir(__PACKAGE__->prefix, 'etc') };
 
 sub datadir    { File::Spec->catdir(__PACKAGE__->prefix, 'share') };
-sub docdir     { File::Spec->catdir(__PACKAGE__->prefix, 'share', 'doc') };
+sub docdir     { File::Spec->catdir(__PACKAGE__->prefix, 'doc') };
 sub cache      { File::Spec->catdir(__PACKAGE__->localstatedir, 'cache') };
 sub log        { File::Spec->catdir(__PACKAGE__->localstatedir, 'log') };
 sub spool      { File::Spec->catdir(__PACKAGE__->localstatedir, 'spool') };

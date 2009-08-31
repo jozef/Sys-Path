@@ -126,7 +126,7 @@ sub ACTION_post_install {
     close($config_fh);    
 }
 
-=head2 find_distribution_root(__PACKAGE__, __FILE__)
+=head2 find_distribution_root(__PACKAGE__)
 
 Find the root folder of distribution by going up the folder structure.
 
@@ -135,9 +135,12 @@ Find the root folder of distribution by going up the folder structure.
 sub find_distribution_root {
     my $self            = shift;
     my $module_name     = shift;
-    my $module_filename = shift;
+
+    my $module_filename = $module_name.'.pm';
+    $module_filename =~ s{::}{/}g;
+    $module_filename = File::Spec->rel2abs($INC{$module_filename});
     
-    my @path = File::Spec->splitdir(File::Spec->rel2abs($module_filename));
+    my @path = File::Spec->splitdir($module_filename);
     my @package_names = split('::',$module_name);
     @path = splice(@path,0,-1-@package_names);
     while (not -d File::Spec->catdir(@path, 't')) {
