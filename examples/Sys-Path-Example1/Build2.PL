@@ -12,7 +12,6 @@ my $builder = Module::Build::SysPath->new(
         'Cwd'        => 0,
     },
     add_to_cleanup      => [ 'Sys-Path-Example1-*' ],
-    create_makefile_pl => 'traditional',
 );
 
 $builder->create_build_script();

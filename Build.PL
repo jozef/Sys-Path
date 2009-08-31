@@ -17,6 +17,7 @@ my $builder = inc::MyBuilder->new(
     requires => {
         'File::Spec' => 0,
         'IO::Any'    => 0,
+        'List::MoreUtils' => 0,
     },
     build_requires => {
         'Test::More'        => 0,

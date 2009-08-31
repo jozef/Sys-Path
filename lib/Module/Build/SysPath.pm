@@ -23,6 +23,12 @@ our $VERSION = '0.01';
 use base 'Module::Build';
 use Sys::Path;
 
+sub new {
+	my $class = shift;
+	my $builder = $class->SUPER::new(@_);
+	return Sys::Path->post_new($builder);
+}
+
 sub ACTION_install {
 	my $builder = shift;
 	$builder->SUPER::ACTION_install(@_);

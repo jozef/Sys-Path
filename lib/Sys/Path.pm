@@ -48,6 +48,8 @@ our $VERSION = '0.01';
 
 use File::Spec;
 use IO::Any;
+use List::MoreUtils 'any';
+use FindBin '$Bin';
 
 BEGIN {
     my $home = eval { local $SIG{__DIE__}; (getpwuid($>))[7] } || $ENV{HOME};
@@ -123,7 +125,9 @@ sub ACTION_post_install {
         print $real_config_fh $line;
     }
     close($real_config_fh);
-    close($config_fh);    
+    close($config_fh);
+    
+    return;
 }
 
 =head2 find_distribution_root(__PACKAGE__)
@@ -149,6 +153,54 @@ sub find_distribution_root {
             if not @path;
     }
     return File::Spec->catdir(@path);
+}
+
+sub post_new {
+    my $self    = shift;
+    my $builder = shift;
+    my $module  = shift || $builder->module_name;
+
+    # normalize module name (some people write - instead of ::) and add config level
+    $module =~ s/-/::/g;
+    $module .= '::SysPathConfig';
+    
+    do {
+        unshift @INC, File::Spec->catdir($Bin, 'lib');
+        eval "use $module"; die $@ if $@;
+    };
+    
+    my $distribution_root = $self->find_distribution_root($module);
+    
+    foreach my $path_type ($module->path_types) {
+        my $sys_path = $module->$path_type;
+        # skip prefix and localstatedir those are not really destination paths
+        next
+            if any { $_ eq $path_type } ('prefix' ,'localstatedir');
+        # skip if the path doesn't exist
+        next
+            if not -d $sys_path;
+        
+        # prepare a list of files to install
+        $builder->{'properties'}->{$path_type.'_files'} = {
+            map {
+                my $file      = $_;
+                my $dest_file = $_;
+                $file         =~ s/$distribution_root.//;
+                $dest_file    =~ s/^$sys_path.//;
+                $file => File::Spec->catfile($path_type, $dest_file)
+            }
+            grep { -f $_ }
+            @{$builder->rscan_dir($sys_path)}
+        };
+        
+        # set instalation paths
+        $builder->{'properties'}->{'install_path'}->{$path_type} = Sys::Path->$path_type;
+        
+        # add build elements of the path types
+        $builder->add_build_element($path_type);
+    }
+    
+    return $builder;
 }
 
 1;
