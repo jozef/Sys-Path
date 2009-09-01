@@ -14,6 +14,9 @@ my $builder = inc::MyBuilder->new(
     license             => 'perl',
     dist_author         => 'Jozef Kutej <jkutej@cpan.org>',
     dist_version_from   => 'lib/Sys/Path.pm',
+    configure_requires => {
+        'IO::Any' => 0,
+    },
     requires => {
         'File::Spec' => 0,
         'IO::Any'    => 0,
