@@ -26,7 +26,6 @@ my $builder = inc::MyBuilder->new(
         'Test::More'        => 0,
     },
     add_to_cleanup      => [ 'Sys-Path-*' ],
-    create_makefile_pl => 'traditional',
     create_readme       => 1,
     sign                => 1,
     get_options         => {

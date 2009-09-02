@@ -133,7 +133,7 @@ TODO for next version...
 use warnings;
 use strict;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use File::Spec;
 use IO::Any;
