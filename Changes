@@ -1,5 +1,9 @@
 Revision history for Sys-Path
 
+0.03    3 Sep 2009
+0.02    2 Sep 2009
+        - Build.PL tweaks
+
 0.01    Date/time
         First version, released on an unsuspecting world.
 
