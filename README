@@ -12,6 +12,9 @@ BUILD
 Build.PL
         use Module::Build::SysPath;
         my $builder = Module::Build::SysPath->new(
+            configure_requires => {
+                'Module::Build::SysPath' => 0,
+            },
             ...
 
         use Module::Build;
@@ -20,22 +23,13 @@ Build.PL
         # update system paths during the installation
         my $builder_class = Module::Build->subclass(
             class => 'My::Builder',
-            code => q{
-                use Sys::Path;
-                sub new {
-                    my $class = shift;
-                    my $builder = $class->SUPER::new(@_);
-                    return Sys::Path->post_new($builder);
-                }
-                sub ACTION_install {
-                    my $builder = shift;
-                    $builder->SUPER::ACTION_install(@_);
-                    Sys::Path->ACTION_post_install($builder);
-                }
-            },
+            code => q{ unshift @INC, 'Module::Build::SysPath'; },
         );
     
         my $builder = $builder_class->new(
+            configure_requires => {
+                'Module::Build::SysPath' => 0,
+            },
             ...
 
 NOTE
@@ -138,18 +132,6 @@ METHODS
         run
         lock
         state
-
-  ACTION_post_install($builder [, $module_name])
-
-    Action that should be run after Module::Build ACTION_install.
-
-  find_distribution_root(__PACKAGE__)
-
-    Find the root folder of distribution by going up the folder structure.
-
-  post_new
-
-    Function to be invoked after Module::Build.
 
 AUTHOR
     Jozef Kutej, `<jkutej at cpan.org>'

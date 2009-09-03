@@ -5,19 +5,7 @@ use Sys::Path;
 
 my $builder_class = Module::Build->subclass(
     class => 'My::Builder',
-    code => q{
-        use Sys::Path;
-        sub new {
-            my $class = shift;
-            my $builder = $class->SUPER::new(@_);
-            return Sys::Path->post_new($builder);
-        }
-        sub ACTION_install {
-            my $builder = shift;
-            $builder->SUPER::ACTION_install(@_);
-            return Sys::Path->ACTION_post_install($builder);
-        }
-    },
+    code => q{ unshift @INC, 'Module::Build::SysPath'; },
 );
     
 my $builder = $builder_class->new(

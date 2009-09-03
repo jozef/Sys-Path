@@ -53,7 +53,7 @@ sub _path_types {qw(
 
 =cut
 
-sub prefix        { use Sys::Path; Sys::Path->find_distribution_root(__PACKAGE__); };
+sub prefix        { use Module::Build::SysPath; Module::Build::SysPath->find_distribution_root(__PACKAGE__); };
 sub localstatedir { __PACKAGE__->prefix };
 
 sub sysconfdir { File::Spec->catdir(__PACKAGE__->prefix, 'etc') };
