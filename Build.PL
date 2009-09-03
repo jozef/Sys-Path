@@ -41,6 +41,13 @@ my $builder = inc::MyBuilder->new(
         'sp-lock'          => { type => '=s' },
         'sp-state'         => { type => '=s' },
     },
+    meta_merge => {
+        resources => {
+            repository => 'git://github.com/jozef/Sys-Path.git',
+            bugtracker => 'http://github.com/jozef/Sys-Path/issues',
+        },
+        keywords => [ qw/ system paths instalation deployment applications / ],
+    },
 );
 
 my @path_types = SysPathConfig->_path_types;
