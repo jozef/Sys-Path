@@ -33,7 +33,7 @@ Sys::Path - get/configure system paths
     # update system paths during the installation
     my $builder_class = Module::Build->subclass(
         class => 'My::Builder',
-        code => q{ unshift @INC, 'Module::Build::SysPath'; },
+        code => q{ use Module::Build::SysPath; unshift @ISA, 'Module::Build::SysPath'; },
     );
     
     my $builder = $builder_class->new(
@@ -133,7 +133,7 @@ TODO for next version...
 use warnings;
 use strict;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use File::Spec;
 

@@ -5,7 +5,7 @@ use Sys::Path;
 
 my $builder_class = Module::Build->subclass(
     class => 'My::Builder',
-    code => q{ unshift @INC, 'Module::Build::SysPath'; },
+    code => q{ use Module::Build::SysPath; unshift @ISA, 'Module::Build::SysPath'; },
 );
     
 my $builder = $builder_class->new(
