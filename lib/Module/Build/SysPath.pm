@@ -26,7 +26,6 @@ use base 'Module::Build';
 use Sys::Path;
 use List::MoreUtils 'any';
 use FindBin '$Bin';
-use IO::Any;
 
 our $sys_path_config_name = 'SPc';
 
@@ -121,8 +120,8 @@ sub ACTION_install {
     unlink $installed_module_filename;
     
     # write the new version of SPc.pm
-    my $config_fh      = IO::Any->read([$module_filename]);
-    my $real_config_fh = IO::Any->write([$installed_module_filename]);
+    open(my $config_fh, '<', $module_filename) or die $!;
+    open(my $real_config_fh, '>', $installed_module_filename) or die $!;
     while (my $line = <$config_fh>) {
         next if ($line =~ m/# remove after install$/);
         if ($line =~ m/^sub \s+ ($path_types) \s* {/xms) {

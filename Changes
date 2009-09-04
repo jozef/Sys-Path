@@ -3,7 +3,7 @@ Revision history for Sys-Path
 0.07    4 Sep 2009
         - fixed the "code =>" example
         - removed dependency on 5.010
-        
+        - removed dependency on IO::Any
 
 0.06    4 Sep 2009
         - renamed configuration file from SysPathConfig to SPc
