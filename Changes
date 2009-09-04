@@ -1,5 +1,8 @@
 Revision history for Sys-Path
 
+0.06    4 Sep 2009
+        - renamed configuration file from SysPathConfig to SPc
+
 0.05    4 Sep 2009
         - proper consistent versioning :)
 

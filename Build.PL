@@ -7,7 +7,7 @@ use inc::MyBuilder;
 
 use FindBin '$Bin';
 use lib File::Spec->catdir($Bin, 'default');
-use SysPathConfig;
+use SPc;
 
 my $builder = inc::MyBuilder->new(
     module_name         => 'Sys::Path',
@@ -51,14 +51,14 @@ my $builder = inc::MyBuilder->new(
     },
 );
 
-my @path_types = SysPathConfig->_path_types;
+my @path_types = SPc->_path_types;
 $builder->notes('path_types' => join('|', @path_types));
 
 foreach my $path_type (@path_types) {
     my $path = $builder->args('sp-'.$path_type);
-    $path = $builder->prompt($path_type, SysPathConfig->$path_type)
+    $path = $builder->prompt($path_type, SPc->$path_type)
         if not $path;
-    SysPathConfig->$path_type($path);
+    SPc->$path_type($path);
     $builder->notes($path_type => $path);
     print $path_type, ' set to: ', $path, "\n";
 }

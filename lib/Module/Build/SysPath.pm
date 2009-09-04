@@ -26,6 +26,9 @@ use base 'Module::Build';
 use Sys::Path;
 use List::MoreUtils 'any';
 use FindBin '$Bin';
+use IO::Any;
+
+our $sys_path_config_name = 'SPc';
 
 =head2 new
 
@@ -40,7 +43,7 @@ sub new {
 
     # normalize module name (some people write - instead of ::) and add config level
     $module =~ s/-/::/g;
-    $module .= '::SysPathConfig';
+    $module .= '::'.$sys_path_config_name;
     
     do {
         unshift @INC, File::Spec->catdir($Bin, 'lib');
@@ -97,9 +100,9 @@ sub ACTION_install {
     
     # normalize module name (some people write - instead of ::) and add config level
     $module =~ s/-/::/g;
-    $module .= '::SysPathConfig';
+    $module .= '::'.$sys_path_config_name;
     
-    # get path to blib and just installed SysPathConfig.pm
+    # get path to blib and just installed SPc.pm
     my $module_filename = $module.'.pm';
     $module_filename =~ s{::}{/}g;
     my $installed_module_filename = File::Spec->catfile(
@@ -117,7 +120,7 @@ sub ACTION_install {
         if not -f $installed_module_filename;
     unlink $installed_module_filename;
     
-    # write the new version of SysPathConfig.pm
+    # write the new version of SPc.pm
     my $config_fh      = IO::Any->read([$module_filename]);
     my $real_config_fh = IO::Any->write([$installed_module_filename]);
     while (my $line = <$config_fh>) {

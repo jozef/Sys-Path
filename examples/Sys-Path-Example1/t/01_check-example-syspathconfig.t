@@ -10,7 +10,7 @@ use Cwd 'abs_path';
 use FindBin qw($Bin);
 
 BEGIN {
-	use_ok ( 'Sys::Path::Example1::SysPathConfig' ) or exit;
+	use_ok ( 'Sys::Path::Example1::SPc' ) or exit;
 }
 
 exit main();
@@ -31,7 +31,7 @@ sub main {
 	);
 	while (my ($type, $path) = each(%paths_to_check)) {
 		is(
-			Sys::Path::Example1::SysPathConfig->$type,
+			Sys::Path::Example1::SPc->$type,
 			File::Spec->catdir(
 				abs_path(File::Spec->catfile($Bin, '..',)),
 				@{$path},
