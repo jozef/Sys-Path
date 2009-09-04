@@ -144,7 +144,7 @@ BEGIN {
         my $syspath_home = File::Spec->catdir($home, '.syspath');
         if (-d $syspath_home) {
             local @INC = ($syspath_home);
-            eval { require 'SysPathConfig' };
+            eval 'use SysPathConfig';
         }
     }
 }
