@@ -25,6 +25,7 @@ sub _path_types {qw(
 	run
 	lock
 	state
+	localedir
 )};
 
 =head1 PATHS
@@ -59,6 +60,7 @@ sub localstatedir { __PACKAGE__->prefix };
 sub sysconfdir { File::Spec->catdir(__PACKAGE__->prefix, 'etc') };
 sub datadir    { File::Spec->catdir(__PACKAGE__->prefix, 'share') };
 sub docdir     { File::Spec->catdir(__PACKAGE__->prefix, 'doc') };
+sub localedir  { File::Spec->catdir(__PACKAGE__->prefix, 'share', 'locale') };
 sub cache      { File::Spec->catdir(__PACKAGE__->localstatedir, 'cache') };
 sub log        { File::Spec->catdir(__PACKAGE__->localstatedir, 'log') };
 sub spool      { File::Spec->catdir(__PACKAGE__->localstatedir, 'spool') };

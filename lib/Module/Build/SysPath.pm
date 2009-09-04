@@ -56,10 +56,7 @@ sub new {
         # skip prefix and localstatedir those are not really destination paths
         next
             if any { $_ eq $path_type } ('prefix' ,'localstatedir');
-        # skip if the path doesn't exist
-        next
-            if not -d $sys_path;
-        
+
         # prepare a list of files to install
         $builder->{'properties'}->{$path_type.'_files'} = {
             map {
@@ -71,7 +68,7 @@ sub new {
             }
             grep { -f $_ }
             @{$builder->rscan_dir($sys_path)}
-        };
+        } if -d $sys_path;
         
         # set instalation paths
         $builder->{'properties'}->{'install_path'}->{$path_type} = Sys::Path->$path_type;
