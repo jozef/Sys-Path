@@ -20,10 +20,10 @@ Sys::Path - get/configure system paths
     use Module::Build::SysPath;
     my $builder = Module::Build::SysPath->new(
         configure_requires => {
-            'Module::Build::SysPath' => 0.05,
+            'Module::Build::SysPath' => 0.06,
         },
         build_requires => {
-            'Module::Build::SysPath' => 0.05,
+            'Module::Build::SysPath' => 0.06,
         }
         ...
 
@@ -38,10 +38,10 @@ Sys::Path - get/configure system paths
     
     my $builder = $builder_class->new(
         configure_requires => {
-            'Module::Build::SysPath' => 0.05,
+            'Module::Build::SysPath' => 0.06,
         },
         build_requires => {
-            'Module::Build::SysPath' => 0.05,
+            'Module::Build::SysPath' => 0.06,
         }
         ...
 
@@ -62,7 +62,7 @@ all other non-standard Perl installations or systems the default prefix is
 the prefix of Perl it self. Still those are just defaults and can be changed
 during C<perl Build.PL> prompting. After L<Sys::Path> is configured and installed
 all modules using it can just read/use the paths set. In addition to the system
-wide L<SPc> this file (F<SPc.pm>) can be added to F<$HOME/.syspath/>
+wide L<SPc>, (F<SPc.pm>) can be added to F<$HOME/.syspath/>
 folder in which case it has a preference over the system wide one.
 
 =head2 USAGE
