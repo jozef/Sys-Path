@@ -54,8 +54,8 @@ DESCRIPTION
     self. Still those are just defaults and can be changed during `perl
     Build.PL' prompting. After Sys::Path is configured and installed all
     modules using it can just read/use the paths set. In addition to the
-    system wide SPc this file (SPc.pm) can be added to $HOME/.syspath/
-    folder in which case it has a preference over the system wide one.
+    system wide SPc, (SPc.pm) can be added to $HOME/.syspath/ folder in
+    which case it has a preference over the system wide one.
 
   USAGE
 

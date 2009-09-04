@@ -9,10 +9,7 @@ SPc - build-time system path configuration
 use warnings;
 use strict;
 
-our $VERSION = '0.01';
-
-use 5.010;
-use feature 'state';
+our $VERSION = '0.07';
 
 use File::Spec;
 
@@ -57,10 +54,23 @@ sub _path_types {qw(
 =cut
 
 # sub names inspired by http://www.gnu.org/software/autoconf/manual/html_node/Installation-Directory-Variables.html#Installation-Directory-Variables
-sub prefix        { use Config; state $prefix = $Config::Config{'prefix'}; shift; $prefix = $_[0] if @_; return $prefix; };
-sub localstatedir { use Config; state $localstatedir = $Config::Config{'prefix'} eq '/usr' ? '/var' : File::Spec->catdir($Config::Config{'prefix'}, 'var'); shift; $localstatedir = $_[0] if @_; return $localstatedir; };
+use Config;                                                  # remove after install
+my $prefix = $Config::Config{'prefix'};                      # remove after install
+my $localstatedir =                                          # remove after install
+	$Config::Config{'prefix'} eq '/usr'                      # remove after install
+	? '/var'                                                 # remove after install
+	: File::Spec->catdir($Config::Config{'prefix'}, 'var')   # remove after install
+;                                                            # remove after install
+my $sysconfdir =                                             # remove after install
+	$Config::Config{'prefix'} eq '/usr'                      # remove after install
+	? '/etc'                                                 # remove after install
+	: File::Spec->catdir($Config::Config{'prefix'}, 'etc')   # remove after install
+;                                                            # remove after install
 
-sub sysconfdir { use Config; state $sysconfdir = $Config::Config{'prefix'} eq '/usr' ? '/etc' : File::Spec->catdir($Config::Config{'prefix'}, 'etc'); shift; $sysconfdir = $_[0] if @_; return $sysconfdir; };
+sub prefix        { shift; $prefix = $_[0] if @_; return $prefix; };
+sub localstatedir { shift; $localstatedir = $_[0] if @_; return $localstatedir; };
+
+sub sysconfdir { shift; $sysconfdir = $_[0] if @_; return $sysconfdir; };
 sub datadir    { File::Spec->catdir(__PACKAGE__->prefix, 'share') };
 sub docdir     { File::Spec->catdir(__PACKAGE__->prefix, 'share', 'doc') };
 sub cache      { File::Spec->catdir(__PACKAGE__->localstatedir, 'cache') };

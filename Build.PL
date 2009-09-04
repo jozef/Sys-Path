@@ -1,8 +1,6 @@
 use strict;
 use warnings;
 
-use 5.010;
-
 use inc::MyBuilder;
 
 use FindBin '$Bin';

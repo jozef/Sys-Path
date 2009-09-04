@@ -124,6 +124,7 @@ sub ACTION_install {
     my $config_fh      = IO::Any->read([$module_filename]);
     my $real_config_fh = IO::Any->write([$installed_module_filename]);
     while (my $line = <$config_fh>) {
+        next if ($line =~ m/# remove after install$/);
         if ($line =~ m/^sub \s+ ($path_types) \s* {/xms) {
             $line = 'sub '.$1." {'".Sys::Path->$1."'};"."\n";
         }
