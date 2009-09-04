@@ -4,6 +4,7 @@ Revision history for Sys-Path
         - fixed the "code =>" example
         - removed dependency on 5.010
         - removed dependency on IO::Any
+        - localedir added
 
 0.06    4 Sep 2009
         - renamed configuration file from SysPathConfig to SPc
