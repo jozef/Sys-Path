@@ -1,5 +1,8 @@
 Revision history for Sys-Path
 
+0.05    4 Sep 2009
+        - proper consistent versioning :)
+
 0.04    3 Sep 2009
         - moved the Module::Build functions aways from Sys::Path
 
