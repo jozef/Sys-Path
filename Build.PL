@@ -23,7 +23,8 @@ my $builder = inc::MyBuilder->new(
         'List::MoreUtils' => 0,
     },
     build_requires => {
-        'Test::More'        => 0,
+        'Test::More' => 0,
+        'IO::Any'    => 0,
     },
     add_to_cleanup      => [ 'Sys-Path-*' ],
     create_readme       => 1,

@@ -20,8 +20,11 @@ Sys::Path - get/configure system paths
     use Module::Build::SysPath;
     my $builder = Module::Build::SysPath->new(
         configure_requires => {
-            'Module::Build::SysPath' => 0,
+            'Module::Build::SysPath' => 0.05,
         },
+        build_requires => {
+            'Module::Build::SysPath' => 0.05,
+        }
         ...
 
     use Module::Build;
@@ -35,8 +38,11 @@ Sys::Path - get/configure system paths
     
     my $builder = $builder_class->new(
         configure_requires => {
-            'Module::Build::SysPath' => 0,
+            'Module::Build::SysPath' => 0.05,
         },
+        build_requires => {
+            'Module::Build::SysPath' => 0.05,
+        }
         ...
 
 =head1 NOTE
@@ -127,7 +133,7 @@ TODO for next version...
 use warnings;
 use strict;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use File::Spec;
 
