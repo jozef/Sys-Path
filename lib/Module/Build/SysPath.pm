@@ -31,7 +31,7 @@ our $sys_path_config_name = 'SPc';
 
 =head2 new
 
-Adds execution of L<Sys::Path/post_new> to L<Module::Build/new>.
+TODO
 
 =cut
 
@@ -90,7 +90,7 @@ sub new {
 
 =head2 ACTION_install
 
-Adds execution of L<Sys::Path/ACTION_post_install> to L<Module::Build/ACTION_install>.
+TODO
 
 =cut
 

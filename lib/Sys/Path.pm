@@ -124,6 +124,20 @@ F<conf/>, F<share/>, F<doc/>, ... with some useful content.
 
 TODO for next version...
 
+=head2 USE CASES
+
+=head3 system installation
+
+TODO
+
+=head3 custom perl installation
+
+TODO
+
+=head3 homedir installation
+
+TODO
+
 =head2 HOW IT WORKS
 
 TODO for next version...
@@ -133,7 +147,7 @@ TODO for next version...
 use warnings;
 use strict;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use File::Spec;
 
