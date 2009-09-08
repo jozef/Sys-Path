@@ -20,7 +20,7 @@ A subclass of L<Module::Build>. See L<Sys::Path> for description and usage.
 use warnings;
 use strict;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use base 'Module::Build';
 use Sys::Path;
@@ -51,8 +51,15 @@ sub new {
     
     my $distribution_root = $builder->find_distribution_root();
     
+    my %spc_properties = (
+        'path_types' => [ $module->_path_types ],
+    );
     foreach my $path_type ($module->_path_types) {
         my $sys_path = $module->$path_type;
+
+        # store for install time retrieval
+        $spc_properties{'path'}->{$path_type} = Sys::Path->$path_type;
+
         # skip prefix and localstatedir those are not really destination paths
         next
             if any { $_ eq $path_type } ('prefix' ,'localstatedir');
@@ -76,6 +83,7 @@ sub new {
         # add build elements of the path types
         $builder->add_build_element($path_type);
     }
+    $builder->{'properties'}->{'spc'} = \%spc_properties;
     
     return $builder;
 }
@@ -92,7 +100,7 @@ sub ACTION_install {
 
     my $module  = $builder->module_name;
 
-    my $path_types = join('|', Sys::Path->_path_types);
+    my $path_types = join('|', @{$builder->{'properties'}->{'spc'}->{'path_types'}});
     
     # normalize module name (some people write - instead of ::) and add config level
     $module =~ s/-/::/g;
@@ -122,7 +130,13 @@ sub ACTION_install {
     while (my $line = <$config_fh>) {
         next if ($line =~ m/# remove after install$/);
         if ($line =~ m/^sub \s+ ($path_types) \s* {/xms) {
-            $line = 'sub '.$1." {'".Sys::Path->$1."'};"."\n";
+            $line =
+                'sub '
+                .$1
+                ." {'"
+                .$builder->{'properties'}->{'spc'}->{'path'}->{$1}
+                ."'};\n"
+            ;
         }
         print $real_config_fh $line;
     }
