@@ -13,8 +13,12 @@ my $builder = inc::MyBuilder->new(
     dist_author         => 'Jozef Kutej <jkutej@cpan.org>',
     dist_version_from   => 'lib/Sys/Path.pm',
     requires => {
-        'File::Spec' => 0,
+        'File::Spec'      => 0,
         'List::MoreUtils' => 0,
+        'Text::Diff'      => 0,
+        'JSON::Util'      => 0,
+        'Digest::MD5'     => 0,
+        'Text::Diff'      => 0,
     },
     build_requires => {
         'Test::More' => 0,
@@ -42,6 +46,9 @@ my $builder = inc::MyBuilder->new(
         },
         keywords => [ qw/ system paths instalation deployment applications / ],
     },
+    sharedstatedir_files => {
+        'varlib/syspath/install-checksums.json' => 'sharedstatedir/syspath/install-checksums.json',
+    },
 );
 
 my @path_types = SPc->_path_types;
@@ -55,5 +62,8 @@ foreach my $path_type (@path_types) {
     $builder->notes($path_type => $path);
     print $path_type, ' set to: ', $path, "\n";
 }
+
+$builder->{'properties'}->{'install_path'}->{'sharedstatedir'} = SPc->sharedstatedir;
+$builder->add_build_element('sharedstatedir');
 
 $builder->create_build_script();

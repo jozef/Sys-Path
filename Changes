@@ -1,5 +1,12 @@
 Revision history for Sys-Path
 
+0.08    9 Sep 2009
+        - store paths from initial run of `perl Build.PL`
+          (install can be run as root so homedir configuration will change)
+        - sharedstatedir (/var/lib) added
+        - conffiles support
+        - make conffiles and sharedstatedir files writeable
+
 0.07    4 Sep 2009
         - fixed the "code =>" example
         - removed dependency on 5.010

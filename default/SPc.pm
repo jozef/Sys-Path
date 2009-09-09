@@ -24,8 +24,8 @@ sub _path_types {qw(
 	spool
 	run
 	lock
-	state
 	localedir
+	sharedstatedir
 )};
 
 =head1 PATHS
@@ -51,6 +51,13 @@ sub _path_types {qw(
 =head2 lock
 
 =head2 state
+
+=head2 sharedstatedir
+
+/var/lib
+
+The directory for installing modifiable architecture-independent data.
+http://www.pathname.com/fhs/pub/fhs-2.3.html#VARLIBVARIABLESTATEINFORMATION
 
 =cut
 
@@ -80,7 +87,7 @@ sub log        { File::Spec->catdir(__PACKAGE__->localstatedir, 'log') };
 sub spool      { File::Spec->catdir(__PACKAGE__->localstatedir, 'spool') };
 sub run        { File::Spec->catdir(__PACKAGE__->localstatedir, 'run') };
 sub lock       { File::Spec->catdir(__PACKAGE__->localstatedir, 'lock') };
-sub state      { File::Spec->catdir(__PACKAGE__->localstatedir, 'state') };
+sub sharedstatedir { File::Spec->catdir(__PACKAGE__->localstatedir, 'lib') };
 
 1;
 

@@ -1,6 +1,10 @@
 package inc::MyBuilder;
 
+use strict;
+use warnings;
+
 use File::Spec;
+use ExtUtils::Install;
 use base 'Module::Build';
 
 sub ACTION_build {
@@ -24,8 +28,26 @@ sub ACTION_build {
 	}
 	close($blib_config_fh);
 	close($config_fh);
-	
+		
 	return;
+}
+
+sub ACTION_install {
+	my $self = shift;
+	my @args = @_;
+	
+	$self->SUPER::ACTION_install(@args);
+
+	# see https://rt.cpan.org/Ticket/Display.html?id=49579
+	# ExtUtils::Install is forcing 0444 so we have to hack write permition after install :-/
+	chmod
+		0644,
+		File::Spec->catfile(
+			$self->install_map->{File::Spec->catdir('blib', 'sharedstatedir')},
+			'syspath',
+			'install-checksums.json',
+		)
+	or die $!;
 }
 
 1;
