@@ -22,6 +22,7 @@ my $builder = inc::MyBuilder->new(
     },
     build_requires => {
         'Test::More' => 0,
+        'File::Path' => 0,
     },
     add_to_cleanup      => [ 'Sys-Path-*' ],
     create_readme       => 1,
@@ -47,7 +48,7 @@ my $builder = inc::MyBuilder->new(
         keywords => [ qw/ system paths instalation deployment applications / ],
     },
     sharedstatedir_files => {
-        'varlib/syspath/install-checksums.json' => 'sharedstatedir/syspath/install-checksums.json',
+        'varlib/syspath/.exists' => 'sharedstatedir/syspath/.exists',
     },
 );
 

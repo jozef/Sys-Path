@@ -6,6 +6,7 @@ use warnings;
 use File::Spec;
 use ExtUtils::Install;
 use base 'Module::Build';
+use File::Path 'mkpath';
 
 sub ACTION_build {
 	my $self = shift;
@@ -37,17 +38,13 @@ sub ACTION_install {
 	my @args = @_;
 	
 	$self->SUPER::ACTION_install(@args);
-
-	# see https://rt.cpan.org/Ticket/Display.html?id=49579
-	# ExtUtils::Install is forcing 0444 so we have to hack write permition after install :-/
-	chmod
-		0644,
-		File::Spec->catfile(
-			$self->install_map->{File::Spec->catdir('blib', 'sharedstatedir')},
-			'syspath',
-			'install-checksums.json',
-		)
-	or die $!;
+	
+	my $sharedstatedir = File::Spec->catdir(
+		$self->install_map->{File::Spec->catdir('blib', 'sharedstatedir')},
+		'syspath',
+	);
+	mkpath($sharedstatedir)
+		if not -d $sharedstatedir;
 }
 
 1;

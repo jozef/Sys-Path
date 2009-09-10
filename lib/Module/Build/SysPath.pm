@@ -64,7 +64,7 @@ sub new {
         'path_types' => [ $module->_path_types ],
     );
     my %rename_in_system;
-    my @conffiles_in_system;
+    my %conffiles_in_system;
     my @writefiles_in_system;
     foreach my $path_type ($module->_path_types) {
         my $sys_path     = $module->$path_type;
@@ -96,16 +96,21 @@ sub new {
                 # print 'dfile> ', $dest_file, "\n\n";
                 
                 if (any { $_ eq $file } @conffiles) {
-                    push @conffiles_in_system, $dest_file;
+                    $conffiles_in_system{$dest_file} = md5_hex(IO::Any->slurp([$file]));
                     
                     my $diff;
                     $diff = diff($file, $dest_file, { STYLE => 'Unified' })
                         if -f $dest_file;
                     if (
-                        $diff
-                        and $builder->changed_since_install($dest_file)
+                        $diff                                                  # prompt when files differ
+                        and $builder->changed_since_install($dest_file)        # and only if the file changed on filesystem
                     ) {
-                        if ($builder->prompt_cfg_file_changed($file, $dest_file)) {
+                        # prompt if to overwrite conf or not
+                        if (
+                            # only if the distribution conffile changed since last install
+                            $builder->changed_since_install($dest_file, $file)
+                            and $builder->prompt_cfg_file_changed($file, $dest_file)
+                        ) {
                             $rename_in_system{$dest_file} = $dest_file.'-old';
                         }
                         else {
@@ -133,7 +138,7 @@ sub new {
     }
     $builder->{'properties'}->{'spc'} = \%spc_properties;
     $builder->notes('rename_in_system'     => \%rename_in_system);
-    $builder->notes('conffiles_in_system'  => \@conffiles_in_system);
+    $builder->notes('conffiles_in_system'  => \%conffiles_in_system);
     $builder->notes('writefiles_in_system' => \@writefiles_in_system);
     
     return $builder;
@@ -211,14 +216,9 @@ sub ACTION_install {
         chmod 0644, File::Spec->catfile($destdir || (), $writefile) or die $!;
     }
     
-    # record md5sum of newly created conffiles (only when really installing to system)
-    if (not $destdir) {
-        my %conffiles_md5 = %{JSON::Util->decode([Sys::Path->sharedstatedir, 'syspath', 'install-checksums.json'])};
-        foreach my $conffile (@{$builder->notes('conffiles_in_system')}) {
-            $conffiles_md5{$conffile} = md5_hex(IO::Any->slurp([$conffile]));
-        }
-        JSON::Util->encode(\%conffiles_md5, [Sys::Path->sharedstatedir, 'syspath', 'install-checksums.json']);
-    }
+    # record md5sum of new distribution conffiles (only when really installing to system)
+    $builder->_install_checksums(%{$builder->notes('conffiles_in_system')})
+        if (not $destdir);
     
     return;
 }
@@ -290,13 +290,39 @@ Configuration file `$dst_file'
 }
 
 sub changed_since_install {
-    my $self = shift;
-    my $file = shift;
-    
-    my %files_checksums = %{JSON::Util->decode([ Sys::Path->sharedstatedir, 'syspath', 'install-checksums.json' ])};
+    my $self      = shift;
+    my $dest_file = shift;
+    my $file      = shift || $dest_file;
+
+    my %files_checksums = $self->_install_checksums;
     my $checksum = md5_hex(IO::Any->slurp([$file]));
-    $files_checksums{$file} ||= '';
-    return $files_checksums{$file} ne $checksum;
+    $files_checksums{$dest_file} ||= '';
+    return $files_checksums{$dest_file} ne $checksum;
+}
+
+sub _install_checksums {
+    my $self = shift;
+    my @args = @_;
+    my $checksums_filename = File::Spec->catfile(
+        SPc->sharedstatedir,
+        'syspath',
+        'install-checksums.json'
+    );
+
+    if (@args) {
+        print 'Updating ', $checksums_filename, "\n";
+        my %conffiles_md5 = (
+            $self->_install_checksums,
+            @args,
+        );
+        JSON::Util->encode(\%conffiles_md5, [ $checksums_filename ]);
+        return %conffiles_md5;
+    }
+    
+    JSON::Util->encode({}, [ $checksums_filename ])
+        if not -f $checksums_filename;
+    
+    return %{JSON::Util->decode([ $checksums_filename ])};
 }
 
 1;
