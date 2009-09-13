@@ -41,6 +41,8 @@ sub _path_types {qw(
 
 =head2 docdir
 
+=head2 localedir
+
 =head2 cachedir
 
 =head2 logdir

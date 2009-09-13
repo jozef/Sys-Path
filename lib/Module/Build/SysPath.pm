@@ -262,6 +262,13 @@ sub find_distribution_root {
     return File::Spec->catdir(@path);
 }
 
+=head2 prompt_cfg_file_changed($src_file, $dst_file)
+
+Will prompt if to overwrite C<$dst_file> with C<$src_file>. Returns
+true for "yes" and false for "no".
+
+=cut
+
 sub prompt_cfg_file_changed {
     my $self     = shift;
     my $src_file = shift;
@@ -298,6 +305,13 @@ Configuration file `$dst_file'
     return 1 if any { $answer eq $_ } qw(Y I);
     return 0;
 }
+
+=head2 changed_since_install($dest_file, $file)
+
+Return if C<$dest_file> changed since install. If optional C<$file> is
+set then this one is compared agains install C<$dest_file> checksum.
+
+=cut
 
 sub changed_since_install {
     my $self      = shift;
