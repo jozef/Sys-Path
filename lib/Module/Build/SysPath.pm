@@ -69,6 +69,8 @@ sub new {
     foreach my $path_type ($module->_path_types) {
         my $sys_path     = $module->$path_type;
         my $install_path = Sys::Path->$path_type;
+        
+        $builder->{'properties'}->{$path_type.'_files'} ||= {};
 
         # store for install time retrieval
         $spc_properties{'path'}->{$path_type} = $install_path;
@@ -78,6 +80,7 @@ sub new {
             if any { $_ eq $path_type } ('prefix' ,'localstatedir');
 
         # prepare a list of files to install
+        my $non_persistant = (any { $_ eq $path_type} qw(cachedir logdir spooldir rundir lockdir sharedstatedir webdir));
         if (-d $sys_path) {
             my %files;
             foreach my $file (@{$builder->rscan_dir($sys_path)}) {
@@ -90,6 +93,13 @@ sub new {
                 $dest_file    =~ s/^$sys_path/$install_path/;
                 $blib_file    =~ s/^$sys_path.//;
                 $blib_file    = File::Spec->catfile($path_type, $blib_file);
+                
+                # skip non-persistant folders, only include explicitely wanted and .exists files
+                next if
+                    $non_persistant
+                    and ($file !~ m/\.exists$/)
+                    and (not exists $builder->{'properties'}->{$path_type.'_files'}->{$file})
+                ;
                 
                 # print 'file>  ', $file, "\n";
                 # print 'bfile> ', $blib_file, "\n";

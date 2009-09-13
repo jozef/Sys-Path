@@ -31,3 +31,4 @@ t/fixme.t
 t/pod-coverage.t
 t/pod-spell.t
 t/pod.t
+varlib/syspath/.exists

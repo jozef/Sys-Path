@@ -26,6 +26,7 @@ sub _path_types {qw(
 	lockdir
 	localedir
 	sharedstatedir
+	webdir
 )};
 
 =head1 PATHS
@@ -57,6 +58,10 @@ sub _path_types {qw(
 The directory for installing modifiable architecture-independent data.
 http://www.pathname.com/fhs/pub/fhs-2.3.html#VARLIBVARIABLESTATEINFORMATION
 
+=head2 webdir
+
+/var/www
+
 =cut
 
 # sub names inspired by http://www.gnu.org/software/autoconf/manual/html_node/Installation-Directory-Variables.html#Installation-Directory-Variables
@@ -86,6 +91,7 @@ sub spooldir   { File::Spec->catdir(__PACKAGE__->localstatedir, 'spool') };
 sub rundir     { File::Spec->catdir(__PACKAGE__->localstatedir, 'run') };
 sub lockdir    { File::Spec->catdir(__PACKAGE__->localstatedir, 'lock') };
 sub sharedstatedir { File::Spec->catdir(__PACKAGE__->localstatedir, 'lib') };
+sub webdir     { File::Spec->catdir(__PACKAGE__->localstatedir, 'www') };
 
 1;
 
