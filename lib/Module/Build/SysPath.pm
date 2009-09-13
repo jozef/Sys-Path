@@ -20,7 +20,7 @@ A subclass of L<Module::Build>. See L<Sys::Path> for description and usage.
 use warnings;
 use strict;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use base 'Module::Build';
 use Sys::Path;

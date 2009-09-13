@@ -122,7 +122,81 @@ F<conf/>, F<share/>, F<doc/>, ... with some useful content.
 
 =head2 WHY?
 
-TODO for next version...
+To place and then find files on the filesystem where they are suppose to be.
+There is a Filesystem Hierarchy Standard - L<http://www.pathname.com/fhs/>:
+
+The filesystem standard has been designed to be used by Unix distribution developers,
+package developers, and system implementors. However, it is primarily intended
+to be a reference and is not a tutorial on how to manage a Unix filesystem or directory
+hierarchy.
+
+L<Sys::Path> follows this standard when it is possible. Or when Perl follows.
+Perl can be installed in many places. Most Linux distributions place Perl
+in F</usr/bin/perl> where FHS suggest. In this case the FHS folders are
+suggested in prompt when doing `C<perl Build.PL>`. In other cases for
+other folders or home-dir Perl distributions L<Sys::Path> will suggest
+folders under Perl install prefix. (ex. F<c:\strawerry\> for the ones using
+Windows).
+
+=head2 PATHS
+
+Here is the list of paths. First the default FHS path, then (to compare)
+a suggested path when Perl is not installed in F</usr>.
+
+=head3 prefix
+
+F</usr> - C<$Config::Config{'prefix'}>
+
+=head3 localstatedir
+
+F</var> - C<$Config::Config{'prefix'}>
+
+=head3 sysconfdir
+
+F</etc> - $prefix/etc
+
+=head3 datadir
+
+F</usr/share> - $prefix/share
+
+=head3 docdir
+
+F</usr/share/doc> - $prefix/share/doc
+
+=head3 localedir
+
+F</usr/share/locale> - $prefix/share/locale
+
+=head3 cachedir
+
+F</var/cache> - $localstatedir/cache
+
+=head3 logdir
+
+F</var/log> - $localstatedir/logdir
+
+=head3 spooldir
+
+F</var/spool> - $localstatedir/spool
+
+=head3 rundir
+
+F</var/run> - $localstatedir/rundir
+
+=head3 lockdir
+
+F</var/lock> - $localstatedir/lock
+
+=head3 sharedstatedir
+
+F</var/lib> - $localstatedir/lib
+
+The directory for installing modifiable architecture-independent data.
+http://www.pathname.com/fhs/pub/fhs-2.3.html#VARLIBVARIABLESTATEINFORMATION
+
+=head3 webdir
+
+F</var/www> - $localstatedir/www
 
 =head2 USE CASES
 
@@ -147,7 +221,7 @@ TODO for next version...
 use warnings;
 use strict;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use File::Spec;
 
