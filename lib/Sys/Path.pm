@@ -1,5 +1,7 @@
 package Sys::Path;
 
+=encoding utf-8
+
 =head1 NAME
 
 Sys::Path - get/configure system paths
@@ -273,14 +275,21 @@ __END__
 
 Jozef Kutej, C<< <jkutej at cpan.org> >>
 
+=head1 CONTRIBUTORS
+ 
+The following people have contributed to the Sys::Path by commiting their
+code, sending patches, reporting bugs, asking questions, suggesting useful
+advices, nitpicking, chatting on IRC or commenting on my blog (in no particular
+order):
+
+    Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯
+    Emmanuel Rodriguez
+
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-sys-path at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Sys-Path>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
-
-
-
 
 =head1 SUPPORT
 
