@@ -56,8 +56,8 @@ sub new {
     
     # map conf files to array of real paths
     my @conffiles = (
-        map { File::Spec->catfile(@{$_}) }                  # convert path array to file name strings
-        @{$builder->{'properties'}->{'conffiles'} || []}    # all conffiles
+        map { ref $_ eq 'ARRAY' ? File::Spec->catfile(@{$_}) : $_ }     # convert path array to file name strings
+        @{$builder->{'properties'}->{'conffiles'} || []}                # all conffiles
     );
     
     my %spc_properties = (
