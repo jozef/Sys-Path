@@ -189,7 +189,7 @@ TODO for next version...
 use warnings;
 use strict;
 
-our $VERSION = '0.09';
+our $VERSION = '0.09_01';
 
 use File::Spec;
 use Text::Diff 'diff';
