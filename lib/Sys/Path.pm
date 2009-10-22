@@ -4,7 +4,7 @@ package Sys::Path;
 
 =head1 NAME
 
-Sys::Path - get/configure system paths
+Sys::Path - supply autoconf style installation directories
 
 =head1 SYNOPSIS
 
@@ -321,13 +321,19 @@ sub changed_since_install {
     my $dest_file = shift;
     my $file      = shift || $dest_file;
 
-    my %files_checksums = $self->_install_checksums;
+    my %files_checksums = $self->install_checksums;
     my $checksum = md5_hex(IO::Any->slurp([$file]));
     $files_checksums{$dest_file} ||= '';
     return $files_checksums{$dest_file} ne $checksum;
 }
 
-sub _install_checksums {
+=head2 install_checksums(%filenames_with_checksums)
+
+Getter and setter for files checksums recording.
+
+=cut
+
+sub install_checksums {
     my $self = shift;
     my @args = @_;
     my $checksums_filename = File::Spec->catfile(
@@ -339,7 +345,7 @@ sub _install_checksums {
     if (@args) {
         print 'Updating ', $checksums_filename, "\n";
         my %conffiles_md5 = (
-            $self->_install_checksums,
+            $self->install_checksums,
             @args,
         );
         JSON::Util->encode(\%conffiles_md5, [ $checksums_filename ]);
