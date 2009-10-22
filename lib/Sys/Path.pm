@@ -17,36 +17,6 @@ Sys::Path - get/configure system paths
         --sp-sysconfdir=/usr/local/etc \
         --sp-localstatedir=/var/local
 
-=head1 Build.PL
-
-    use Module::Build::SysPath;
-    my $builder = Module::Build::SysPath->new(
-        configure_requires => {
-            'Module::Build::SysPath' => 0.06,
-        },
-        build_requires => {
-            'Module::Build::SysPath' => 0.06,
-        }
-        ...
-
-    use Module::Build;
-    use Sys::Path;
-    
-    # update system paths during the installation
-    my $builder_class = Module::Build->subclass(
-        class => 'My::Builder',
-        code => q{ use Module::Build::SysPath; unshift @ISA, 'Module::Build::SysPath'; },
-    );
-    
-    my $builder = $builder_class->new(
-        configure_requires => {
-            'Module::Build::SysPath' => 0.06,
-        },
-        build_requires => {
-            'Module::Build::SysPath' => 0.06,
-        }
-        ...
-
 =head1 NOTE
 
 This is an experiment and lot of questions and concerns can come out about
@@ -72,12 +42,8 @@ folder in which case it has a preference over the system wide one.
 L<Sys::Path> primary usage is for module authors to allow them to find their
 data files as during development and testing but also when installed. How?
 Let's look at an example distribution L<Acme::SysPath> that needs a configuration
-file an image file and a template file. See the modules
-
-L<http://github.com/jozef/Acme-SysPath/blob/1a4b89e8239f55bee31b7f1c4fa3d69c8de7c3a4/lib/Acme/SysPath.pm>
-
-or L<Acme::SysPath>. It has path()+template()+image() functions. While working
-in the distribution tree:
+file an image file and a template file. It has path()+template()+image()
+functions. While working in the distribution tree:
 
     Acme-SysPath$ perl -Ilib -MAcme::SysPath -le 'print Acme::SysPath->config, "\n", Acme::SysPath->template;'
     /home/jozef/prog/Acme-SysPath/conf/acme-syspath.cfg
@@ -226,6 +192,11 @@ use strict;
 our $VERSION = '0.09';
 
 use File::Spec;
+use Text::Diff 'diff';
+use JSON::Util;
+use Digest::MD5 qw(md5_hex);
+use List::MoreUtils 'any', 'none';
+use Carp 'croak';
 
 BEGIN {
     my $home = eval { local $SIG{__DIE__}; (getpwuid($>))[7] } || $ENV{HOME};
@@ -247,14 +218,140 @@ use base 'SPc';
     sysconfdir
     datadir
     docdir
-    cache
-    log
-    spool
-    run
-    lock
-    state
+    localedir
+    cachedir
+    logdir
+    spooldir
+    rundir
+    lockdir
+    sharedstatedir
+    webdir
 
 =cut
+
+=head1 BUILDERS/INSTALLERS helper methods
+
+=head2 find_distribution_root(__PACKAGE__)
+
+Find the root folder of distribution by going up the folder structure.
+
+=cut
+
+sub find_distribution_root {
+    my $self        = shift;
+    my $module_name = shift;
+    
+    croak 'pass module_name as argument'
+        if not $module_name;
+    
+    my $module_filename = $module_name.'.pm';
+    $module_filename =~ s{::}{/}g;
+    if (not exists $INC{$module_filename}) {
+        eval 'use '.$module_name;
+        die $@ if $@;
+    }
+    $module_filename = File::Spec->rel2abs($INC{$module_filename});
+    
+    my @path = File::Spec->splitdir($module_filename);
+    my @package_names = split('::',$module_name);
+    @path = splice(@path,0,-1-@package_names);
+    while (not -d File::Spec->catdir(@path, 't')) {
+        pop @path;
+        die 'failed to find distribution root'
+            if not @path;
+    }
+    return File::Spec->catdir(@path);
+}
+
+=head2 prompt_cfg_file_changed($src_file, $dst_file, $prompt_function)
+
+Will prompt if to overwrite C<$dst_file> with C<$src_file>. Returns
+true for "yes" and false for "no".
+
+=cut
+
+sub prompt_cfg_file_changed {
+    my $self     = shift;
+    my $src_file = shift;
+    my $dst_file = shift;
+    my $prompt_function = shift;
+
+    my $answer = '';
+    while (none { $answer eq $_ } qw(Y I N O) ) {
+        print qq{
+Installing new version of config file $dst_file ...
+
+Configuration file `$dst_file'
+ ==> Modified (by you or by a script) since installation.
+ ==> Package distributor has shipped an updated version.
+   What would you like to do about it ?  Your options are:
+    Y or I  : install the package maintainer's version
+    N or O  : keep your currently-installed version
+      D     : show the differences between the versions
+      Z     : background this process to examine the situation
+ The default action is to keep your current version.
+};
+    
+        $answer = uc $prompt_function->('*** '.$dst_file.' (Y/I/N/O/D/Z) ?', 'N');
+        if ($answer eq 'D') {
+            print "\n\n";
+            print diff($src_file, $dst_file, { STYLE => 'Unified' });
+            print "\n";
+        }
+        elsif ($answer eq 'Z') {
+            print "Type `exit' when you're done.\n";
+            system('bash');
+        }
+    }
+
+    return 1 if any { $answer eq $_ } qw(Y I);
+    return 0;
+}
+
+
+=head2 changed_since_install($dest_file, $file)
+
+Return if C<$dest_file> changed since install. If optional C<$file> is
+set then this one is compared agains install C<$dest_file> checksum.
+
+=cut
+
+sub changed_since_install {
+    my $self      = shift;
+    my $dest_file = shift;
+    my $file      = shift || $dest_file;
+
+    my %files_checksums = $self->_install_checksums;
+    my $checksum = md5_hex(IO::Any->slurp([$file]));
+    $files_checksums{$dest_file} ||= '';
+    return $files_checksums{$dest_file} ne $checksum;
+}
+
+sub _install_checksums {
+    my $self = shift;
+    my @args = @_;
+    my $checksums_filename = File::Spec->catfile(
+        SPc->sharedstatedir,
+        'syspath',
+        'install-checksums.json'
+    );
+
+    if (@args) {
+        print 'Updating ', $checksums_filename, "\n";
+        my %conffiles_md5 = (
+            $self->_install_checksums,
+            @args,
+        );
+        JSON::Util->encode(\%conffiles_md5, [ $checksums_filename ]);
+        return %conffiles_md5;
+    }
+    
+    JSON::Util->encode({}, [ $checksums_filename ])
+        if not -f $checksums_filename;
+    
+    return %{JSON::Util->decode([ $checksums_filename ])};
+}
+
 
 1;
 

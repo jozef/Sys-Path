@@ -1,5 +1,11 @@
 Revision history for Sys-Path
 
+0.09    22 Oct 2009
+        - removed the Module::Build::SysPath from this distribution
+          + moved shareable functions from Module::Build::SysPath to
+          Sys::Path so that they can be used by other build/install
+          systems than Module::Build (thanks to Daxim!)
+
 0.08    9 Sep 2009
         - store paths from initial run of `perl Build.PL`
           (install can be run as root so homedir configuration will change)
