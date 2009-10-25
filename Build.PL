@@ -4,8 +4,8 @@ use warnings;
 use inc::MyBuilder;
 
 use FindBin '$Bin';
-use lib File::Spec->catdir($Bin, 'default');
-use SPc;
+use lib File::Spec->catdir($Bin, 'lib');
+use Sys::Path::SPc;
 
 my $builder = inc::MyBuilder->new(
     module_name         => 'Sys::Path',
@@ -52,19 +52,19 @@ my $builder = inc::MyBuilder->new(
     },
 );
 
-my @path_types = SPc->_path_types;
+my @path_types = Sys::Path::SPc->_path_types;
 $builder->notes('path_types' => join('|', @path_types));
 
 foreach my $path_type (@path_types) {
     my $path = $builder->args('sp-'.$path_type);
-    $path = $builder->prompt($path_type, SPc->$path_type)
+    $path = $builder->prompt($path_type, Sys::Path::SPc->$path_type)
         if not $path;
-    SPc->$path_type($path);
+    Sys::Path::SPc->$path_type($path);
     $builder->notes($path_type => $path);
     print $path_type, ' set to: ', $path, "\n";
 }
 
-$builder->{'properties'}->{'install_path'}->{'sharedstatedir'} = SPc->sharedstatedir;
+$builder->{'properties'}->{'install_path'}->{'sharedstatedir'} = Sys::Path::SPc->sharedstatedir;
 $builder->add_build_element('sharedstatedir');
 
 $builder->create_build_script();
