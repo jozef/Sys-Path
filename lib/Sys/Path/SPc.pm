@@ -1,4 +1,4 @@
-package SPc;
+package Sys::Path::SPc;
 
 =head1 NAME
 

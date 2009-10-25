@@ -17,8 +17,10 @@ sub ACTION_build {
 	my $path_types = $notes{'path_types'};
 	
 	# write the new version of SPc.pm
-	open(my $config_fh, '<', File::Spec->catfile('default', 'SPc.pm')) or die $!;
-	open(my $blib_config_fh, '>', File::Spec->catfile($self->blib, 'lib', 'SPc.pm')) or die $!;
+	my $blib_spc = File::Spec->catfile($self->blib, 'lib', 'Sys', 'Path', 'SPc.pm');
+	chmod(0644, $blib_spc);
+	open(my $config_fh, '<', File::Spec->catfile('lib', 'Sys', 'Path', 'SPc.pm')) or die $!;
+	open(my $blib_config_fh, '>', $blib_spc) or die $!;
 	while (my $line = <$config_fh>) {
 		next if ($line =~ m/# remove after install$/);
 		if ($line =~ m/^sub \s+ ($path_types) \s* {/xms) {
@@ -29,6 +31,7 @@ sub ACTION_build {
 	}
 	close($blib_config_fh);
 	close($config_fh);
+	chmod(0444, $blib_spc);
 		
 	return;
 }

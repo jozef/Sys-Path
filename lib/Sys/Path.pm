@@ -196,7 +196,7 @@ use Digest::MD5 qw(md5_hex);
 use List::MoreUtils 'any', 'none';
 use Carp 'croak';
 
-use base 'SPc';
+use base 'Sys::Path::SPc';
 
 =head1 METHODS
 

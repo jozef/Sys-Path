@@ -9,6 +9,7 @@ Revision history for Sys-Path
           sense as if the non-privileged user will be installing modules
           using system Perl to his folder, he can as well configure and
           install Sys::Path with his home configuration (thanks to Daxim)
+        - moved SPc to Sys::Path::SPc
 
 0.08    9 Sep 2009
         - store paths from initial run of `perl Build.PL`
