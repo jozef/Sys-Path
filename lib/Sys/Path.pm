@@ -187,7 +187,7 @@ TODO for next version...
 use warnings;
 use strict;
 
-our $VERSION = '0.09_01';
+our $VERSION = '0.09';
 
 use File::Spec;
 use Text::Diff 'diff';
@@ -324,7 +324,7 @@ sub install_checksums {
     my $self = shift;
     my @args = @_;
     my $checksums_filename = File::Spec->catfile(
-        SPc->sharedstatedir,
+        Sys::Path::SPc->sharedstatedir,
         'syspath',
         'install-checksums.json'
     );
