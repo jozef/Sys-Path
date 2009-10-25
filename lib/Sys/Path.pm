@@ -33,9 +33,7 @@ The default paths for file locations are based on L<http://www.pathname.com/fhs/
 all other non-standard Perl installations or systems the default prefix is
 the prefix of Perl it self. Still those are just defaults and can be changed
 during C<perl Build.PL> prompting. After L<Sys::Path> is configured and installed
-all modules using it can just read/use the paths set. In addition to the system
-wide L<SPc>, (F<SPc.pm>) can be added to F<$HOME/.syspath/>
-folder in which case it has a preference over the system wide one.
+all modules using it can just read/use the paths set.
 
 =head2 USAGE
 
@@ -198,17 +196,6 @@ use Digest::MD5 qw(md5_hex);
 use List::MoreUtils 'any', 'none';
 use Carp 'croak';
 
-BEGIN {
-    my $home = eval { local $SIG{__DIE__}; (getpwuid($>))[7] } || $ENV{HOME};
-    $home ||= $ENV{HOMEDRIVE} . ($ENV{HOMEPATH} || '') if defined $ENV{HOMEDRIVE};
-    if ($home) {
-        my $syspath_home = File::Spec->catdir($home, '.syspath');
-        if (-d $syspath_home) {
-            local @INC = ($syspath_home);
-            eval 'use SPc';
-        }
-    }
-}
 use base 'SPc';
 
 =head1 METHODS
