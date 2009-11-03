@@ -1,5 +1,8 @@
 Revision history for Sys-Path
 
+0.10    03 Nov 2009
+        - Pod updates
+
 0.09    22 Oct 2009
         - removed the Module::Build::SysPath from this distribution
           + moved shareable functions from Module::Build::SysPath to
