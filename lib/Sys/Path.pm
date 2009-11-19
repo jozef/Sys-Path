@@ -69,7 +69,7 @@ that uses L<Sys::Path>.
 
 This is an experiment and lot of questions and concerns can come out about
 the paths configuration. Distributions build systems integration and the naming.
-And as this is early version thinks may change. For these purposes there
+And as this is early version things may change. For these purposes there
 is a mailing list L<http://lists.meon.sk/mailman/listinfo/sys-path>.
 
 =head2 WHY?
