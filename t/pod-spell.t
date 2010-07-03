@@ -26,6 +26,22 @@ add_stopwords(qw(
 	docdir
 	localstatedir
 	sysconfdir
+	cachedir
+	localedir
+	lockdir
+	logdir
+	rundir
+	sharedstatedir
+	spooldir
+	webdir
 	TODO
+	SPc
+	FAQ
+	FHS
+	IRC
+	SysPatchConfig
+	autoconf
+	blog
+	js
 ));
 all_pod_files_spelling_ok();

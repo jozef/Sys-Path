@@ -8,7 +8,7 @@ Sys::Path - supply autoconf style installation directories
 
 =head1 SYNOPSIS
 
-Paths for basic Unix instalation when Perl is in /usr/bin:
+Paths for basic Unix installation when Perl is in /usr/bin:
 
     use Sys::Path;
 
@@ -21,7 +21,7 @@ Paths for basic Unix instalation when Perl is in /usr/bin:
     print Sys::Path->sharedstatedir, "\n";
     # /var/lib
 
-Paths for Unix when Perl is in home dir /home/daxim/local/bin:
+Paths for Unix when Perl is in home folder /home/daxim/local/bin:
 
     print Sys::Path->sysconfdir, "\n";
     # /home/daxim/local/etc
@@ -55,7 +55,7 @@ during C<perl Build.PL> prompting. After L<Sys::Path> is configured and installe
 all programs using it can just read/use the paths.
 
 In addition L<Sys::Path> includes some functions that are related to modules
-build or instalation. For now there is only L<Module::Build> based L<Module::Build::SysPath>
+build or installation. For now there is only L<Module::Build> based L<Module::Build::SysPath>
 that uses L<Sys::Path>.
 
 =head1 BUILD TIME CONFIGURATION
@@ -83,7 +83,7 @@ L<Sys::Path> follows this standard when it is possible. Or when Perl follows.
 Perl can be installed in many places. Most Linux distributions place Perl
 in F</usr/bin/perl> where FHS suggest. In this case the FHS folders are
 suggested in prompt when doing `C<perl Build.PL>`. In other cases for
-other folders or home-dir Perl distributions L<Sys::Path> will suggest
+other folders or home-folder Perl distributions L<Sys::Path> will suggest
 folders under Perl install prefix. (ex. F<c:\strawerry\> for the ones using
 Windows).
 
@@ -315,7 +315,7 @@ Configuration file `$dst_file'
 =head2 changed_since_install($dest_file, $file)
 
 Return if C<$dest_file> changed since install. If optional C<$file> is
-set then this one is compared agains install C<$dest_file> checksum.
+set then this one is compared against install C<$dest_file> checksum.
 
 =cut
 
@@ -380,7 +380,7 @@ L<Module::Build::SysPath>
 
 2. it is weird
 
-3. it's so weird that it is uniq, so there will be no conflict. (hopefully)
+3. it's so weird that it is unique, so there will be no conflict. (hopefully)
 
 =head1 AUTHOR
 
@@ -388,9 +388,9 @@ Jozef Kutej, C<< <jkutej at cpan.org> >>
 
 =head1 CONTRIBUTORS
  
-The following people have contributed to the Sys::Path by commiting their
+The following people have contributed to the Sys::Path by committing their
 code, sending patches, reporting bugs, asking questions, suggesting useful
-advices, nitpicking, chatting on IRC or commenting on my blog (in no particular
+advises, nitpicking, chatting on IRC or commenting on my blog (in no particular
 order):
 
     Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯

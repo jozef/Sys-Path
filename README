@@ -2,7 +2,7 @@ NAME
     Sys::Path - supply autoconf style installation directories
 
 SYNOPSIS
-    Paths for basic Unix instalation when Perl is in /usr/bin:
+    Paths for basic Unix installation when Perl is in /usr/bin:
 
         use Sys::Path;
 
@@ -15,7 +15,7 @@ SYNOPSIS
         print Sys::Path->sharedstatedir, "\n";
         # /var/lib
 
-    Paths for Unix when Perl is in home dir /home/daxim/local/bin:
+    Paths for Unix when Perl is in home folder /home/daxim/local/bin:
 
         print Sys::Path->sysconfdir, "\n";
         # /home/daxim/local/etc
@@ -49,7 +49,7 @@ DESCRIPTION
     just read/use the paths.
 
     In addition Sys::Path includes some functions that are related to
-    modules build or instalation. For now there is only Module::Build based
+    modules build or installation. For now there is only Module::Build based
     Module::Build::SysPath that uses Sys::Path.
 
 BUILD TIME CONFIGURATION
@@ -61,7 +61,7 @@ BUILD TIME CONFIGURATION
 NOTE
     This is an experiment and lot of questions and concerns can come out
     about the paths configuration. Distributions build systems integration
-    and the naming. And as this is early version thinks may change. For
+    and the naming. And as this is early version things may change. For
     these purposes there is a mailing list
     http://lists.meon.sk/mailman/listinfo/sys-path.
 
@@ -75,7 +75,7 @@ NOTE
     follows. Perl can be installed in many places. Most Linux distributions
     place Perl in /usr/bin/perl where FHS suggest. In this case the FHS
     folders are suggested in prompt when doing ``perl Build.PL'`. In other
-    cases for other folders or home-dir Perl distributions Sys::Path will
+    cases for other folders or home-folder Perl distributions Sys::Path will
     suggest folders under Perl install prefix. (ex. c:\strawerry\ for the
     ones using Windows).
 
@@ -197,7 +197,8 @@ METHODS
 
 BUILDERS/INSTALLERS helper methods
   find_distribution_root(__PACKAGE__)
-    Find the root folder of distribution by going up the folder structure.
+    Find the root folder of a modules distribution by going up the folder
+    structure.
 
   prompt_cfg_file_changed($src_file, $dst_file, $prompt_function)
     Will prompt if to overwrite `$dst_file' with `$src_file'. Returns true
@@ -205,7 +206,7 @@ BUILDERS/INSTALLERS helper methods
 
   changed_since_install($dest_file, $file)
     Return if `$dest_file' changed since install. If optional `$file' is set
-    then this one is compared agains install `$dest_file' checksum.
+    then this one is compared against install `$dest_file' checksum.
 
   install_checksums(%filenames_with_checksums)
     Getter and setter for files checksums recording.
@@ -219,16 +220,16 @@ FAQ
 
     2. it is weird
 
-    3. it's so weird that it is uniq, so there will be no conflict.
+    3. it's so weird that it is unique, so there will be no conflict.
     (hopefully)
 
 AUTHOR
     Jozef Kutej, `<jkutej at cpan.org>'
 
 CONTRIBUTORS
-    The following people have contributed to the Sys::Path by commiting
+    The following people have contributed to the Sys::Path by committing
     their code, sending patches, reporting bugs, asking questions,
-    suggesting useful advices, nitpicking, chatting on IRC or commenting on
+    suggesting useful advises, nitpicking, chatting on IRC or commenting on
     my blog (in no particular order):
 
         Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯

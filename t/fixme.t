@@ -6,4 +6,4 @@ eval "use Test::Fixme";
 plan skip_all => "requires Test::Fixme to run"
     if $@;
 
-run_tests();
+run_tests(where => 'lib');
