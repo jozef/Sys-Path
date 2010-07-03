@@ -21,8 +21,12 @@ my $builder = inc::MyBuilder->new(
         'Text::Diff'      => 0,
     },
     build_requires => {
-        'Test::More'    => 0,
-        'Test::Compile' => 0.08,
+        'Test::More'      => 0,
+        'File::Temp'      => 0,
+        'File::Path'      => 2.07,    # Introduce make_path() and rm_tree() API extension.
+        'Test::Differences' => 0,
+        'Test::Exception' => 0,
+        'Capture::Tiny'   => 0,
     },
     add_to_cleanup      => [ 'Sys-Path-*' ],
     create_readme       => 1,

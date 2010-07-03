@@ -1,5 +1,9 @@
 Revision history for Sys-Path
 
+0.11    03 Jul 2010
+        - now considering Build.PL and Makefile.PL when finding distribution root
+          (needed for `./Build disttest` where the t/ folder is not copied)
+
 0.10    03 Nov 2009
         - Pod updates
 

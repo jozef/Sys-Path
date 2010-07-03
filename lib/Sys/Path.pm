@@ -198,7 +198,7 @@ See L<Sys::Path::SPc> for the implementation.
 use warnings;
 use strict;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 use File::Spec;
 use Text::Diff 'diff';
@@ -231,7 +231,8 @@ use base 'Sys::Path::SPc';
 
 =head2 find_distribution_root(__PACKAGE__)
 
-Find the root folder of distribution by going up the folder structure.
+Find the root folder of a modules distribution by going up the
+folder structure.
 
 =cut
 
@@ -253,7 +254,11 @@ sub find_distribution_root {
     my @path = File::Spec->splitdir($module_filename);
     my @package_names = split('::',$module_name);
     @path = splice(@path,0,-1-@package_names);
-    while (not -d File::Spec->catdir(@path, 't')) {
+    while (
+        (not -d File::Spec->catdir(@path, 't'))
+        and (not -f File::Spec->catdir(@path, 'Build.PL'))
+        and (not -f File::Spec->catdir(@path, 'Makefile.PL'))
+    ) {
         pop @path;
         die 'failed to find distribution root'
             if not @path;
@@ -350,6 +355,7 @@ sub install_checksums {
         return %conffiles_md5;
     }
     
+    # create empty json file if non available
     JSON::Util->encode({}, [ $checksums_filename ])
         if not -f $checksums_filename;
     
