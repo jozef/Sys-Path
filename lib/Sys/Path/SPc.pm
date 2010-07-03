@@ -9,7 +9,7 @@ SPc - build-time system path configuration
 use warnings;
 use strict;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11_01';
 
 use File::Spec;
 

@@ -198,7 +198,7 @@ See L<Sys::Path::SPc> for the implementation.
 use warnings;
 use strict;
 
-our $VERSION = '0.11';
+our $VERSION = '0.11_01';
 
 use File::Spec;
 use Text::Diff 'diff';
