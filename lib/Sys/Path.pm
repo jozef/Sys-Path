@@ -379,16 +379,6 @@ __END__
 
 L<Module::Build::SysPath>
 
-=head1 FAQ
-
-=head2 Why "SPc" ?
-
-1. it is short (much more than SysPatchConfig)
-
-2. it is weird
-
-3. it's so weird that it is unique, so there will be no conflict. (hopefully)
-
 =head1 AUTHOR
 
 Jozef Kutej, C<< <jkutej at cpan.org> >>
@@ -403,47 +393,6 @@ order):
     Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯
     Emmanuel Rodriguez
 
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-sys-path at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Sys-Path>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-=head1 SUPPORT
-
-=head2 Mailing list
-
-L<http://lists.meon.sk/mailman/listinfo/sys-path>
-
-=head2 The rest
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc Sys::Path
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Sys-Path>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Sys-Path>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Sys-Path>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Sys-Path>
-
-=back
-
-
 =head1 COPYRIGHT & LICENSE
 
 Copyright 2009 Jozef Kutej, all rights reserved.
@@ -454,4 +403,4 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of Sys::Path
+1;

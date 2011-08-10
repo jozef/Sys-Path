@@ -221,15 +221,6 @@ BUILDERS/INSTALLERS helper methods
 SEE ALSO
     Module::Build::SysPath
 
-FAQ
-  Why "SPc" ?
-    1. it is short (much more than SysPatchConfig)
-
-    2. it is weird
-
-    3. it's so weird that it is unique, so there will be no conflict.
-    (hopefully)
-
 AUTHOR
     Jozef Kutej, `<jkutej at cpan.org>'
 
@@ -241,36 +232,6 @@ CONTRIBUTORS
 
         Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯
         Emmanuel Rodriguez
-
-BUGS
-    Please report any bugs or feature requests to `bug-sys-path at
-    rt.cpan.org', or through the web interface at
-    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Sys-Path. I will be
-    notified, and then you'll automatically be notified of progress on your
-    bug as I make changes.
-
-SUPPORT
-  Mailing list
-    http://lists.meon.sk/mailman/listinfo/sys-path
-
-  The rest
-    You can find documentation for this module with the perldoc command.
-
-        perldoc Sys::Path
-
-    You can also look for information at:
-
-    * RT: CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Sys-Path
-
-    * AnnoCPAN: Annotated CPAN documentation
-        http://annocpan.org/dist/Sys-Path
-
-    * CPAN Ratings
-        http://cpanratings.perl.org/d/Sys-Path
-
-    * Search CPAN
-        http://search.cpan.org/dist/Sys-Path
 
 COPYRIGHT & LICENSE
     Copyright 2009 Jozef Kutej, all rights reserved.
