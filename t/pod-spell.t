@@ -34,6 +34,7 @@ add_stopwords(qw(
 	sharedstatedir
 	spooldir
 	webdir
+	srvdir
 	TODO
 	SPc
 	FAQ

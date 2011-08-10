@@ -9,7 +9,7 @@ SPc - build-time system path configuration
 use warnings;
 use strict;
 
-our $VERSION = '0.11_01';
+our $VERSION = '0.11';
 
 use File::Spec;
 
@@ -27,6 +27,7 @@ sub _path_types {qw(
 	localedir
 	sharedstatedir
 	webdir
+	srvdir
 )};
 
 =head1 PATHS
@@ -57,11 +58,9 @@ See L<Sys::Path/PATHS for details>
 
 =head2 sharedstatedir
 
-/var/lib
-
 =head2 webdir
 
-/var/www
+=head2 srvdir
 
 =cut
 
@@ -78,6 +77,11 @@ my $sysconfdir =                                             # remove after inst
 	? '/etc'                                                 # remove after install
 	: File::Spec->catdir($Config::Config{'prefix'}, 'etc')   # remove after install
 ;                                                            # remove after install
+my $srvdir =                                                 # remove after install
+	$Config::Config{'prefix'} eq '/usr'                      # remove after install
+	? '/srv'                                                 # remove after install
+	: File::Spec->catdir($Config::Config{'prefix'}, 'srv')   # remove after install
+;                                                            # remove after install
 
 sub prefix        { shift; $prefix = $_[0] if @_; return $prefix; };
 sub localstatedir { shift; $localstatedir = $_[0] if @_; return $localstatedir; };
@@ -93,6 +97,7 @@ sub rundir     { File::Spec->catdir(__PACKAGE__->localstatedir, 'run') };
 sub lockdir    { File::Spec->catdir(__PACKAGE__->localstatedir, 'lock') };
 sub sharedstatedir { File::Spec->catdir(__PACKAGE__->localstatedir, 'lib') };
 sub webdir     { File::Spec->catdir(__PACKAGE__->localstatedir, 'www') };
+sub srvdir     { shift; $srvdir = $_[0] if @_; return $srvdir; };
 
 1;
 

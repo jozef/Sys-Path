@@ -172,12 +172,18 @@ F</var/lib> - $localstatedir/lib
 The directory for installing modifiable architecture-independent data.
 See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#VARLIBVARIABLESTATEINFORMATION>.
 
+=head3 srvdir
+
+F</srv> - $prefix/srv
+
+Data for services provided by system.
+See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#SRVDATAFORSERVICESPROVIDEDBYSYSTEM>.
+
 =head3 webdir
 
 F</var/www> - $localstatedir/www
 
-Not defined by FHS but it is a place to put web page related (html, js,
-css, ...) files.
+Directory where distribution put static web files.
 
 =head2 HOW IT WORKS
 
@@ -198,7 +204,7 @@ See L<Sys::Path::SPc> for the implementation.
 use warnings;
 use strict;
 
-our $VERSION = '0.11_01';
+our $VERSION = '0.11';
 
 use File::Spec;
 use Text::Diff 'diff';
@@ -224,6 +230,7 @@ use base 'Sys::Path::SPc';
     lockdir
     sharedstatedir
     webdir
+    srvdir
 
 =cut
 

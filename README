@@ -161,11 +161,17 @@ NOTE
     http://www.pathname.com/fhs/pub/fhs-2.3.html#VARLIBVARIABLESTATEINFORMAT
     ION.
 
+    srvdir
+    /srv - $prefix/srv
+
+    Data for services provided by system. See
+    http://www.pathname.com/fhs/pub/fhs-2.3.html#SRVDATAFORSERVICESPROVIDEDB
+    YSYSTEM.
+
     webdir
     /var/www - $localstatedir/www
 
-    Not defined by FHS but it is a place to put web page related (html, js,
-    css, ...) files.
+    Directory where distribution put static web files.
 
   HOW IT WORKS
     The heart of Sys::Path is just:
@@ -194,6 +200,7 @@ METHODS
         lockdir
         sharedstatedir
         webdir
+        srvdir
 
 BUILDERS/INSTALLERS helper methods
   find_distribution_root(__PACKAGE__)

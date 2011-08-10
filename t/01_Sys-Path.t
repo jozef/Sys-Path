@@ -30,14 +30,17 @@ sub main {
     my $prefix      = File::Spec->catdir($tmp_dir, 'usr');
     my $sysconf     = File::Spec->catdir($tmp_dir, 'etc');
     my $localstate  = File::Spec->catdir($tmp_dir, 'var');
+    my $srv         = File::Spec->catdir($tmp_dir, 'srv');
     
     Sys::Path::SPc->prefix($prefix);
     Sys::Path::SPc->localstatedir($localstate);
     Sys::Path::SPc->sysconfdir($sysconf);
+    Sys::Path::SPc->srvdir($srv);
     
     is(Sys::Path::SPc->prefix, $prefix, 'tmp setters');
     is(Sys::Path::SPc->localstatedir, $localstate, 'tmp setters');
     is(Sys::Path::SPc->sysconfdir, $sysconf, 'tmp setters');
+    is(Sys::Path::SPc->srvdir, $srv, 'tmp setters');
     
     # create all folder types
     foreach my $path_type (Sys::Path::SPc->_path_types) {
