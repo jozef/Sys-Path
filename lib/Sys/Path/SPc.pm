@@ -1,11 +1,5 @@
 package Sys::Path::SPc;
 
-=head1 NAME
-
-SPc - build-time system path configuration
-
-=cut
-
 use warnings;
 use strict;
 
@@ -29,40 +23,6 @@ sub _path_types {qw(
 	webdir
 	srvdir
 )};
-
-=head1 PATHS
-
-See L<Sys::Path/PATHS for details>
-
-=head2 prefix
-
-=head2 localstatedir
-
-=head2 sysconfdir
-
-=head2 datadir
-
-=head2 docdir
-
-=head2 localedir
-
-=head2 cachedir
-
-=head2 logdir
-
-=head2 spooldir
-
-=head2 rundir
-
-=head2 lockdir
-
-=head2 sharedstatedir
-
-=head2 webdir
-
-=head2 srvdir
-
-=cut
 
 # sub names inspired by http://www.gnu.org/software/autoconf/manual/html_node/Installation-Directory-Variables.html#Installation-Directory-Variables
 use Config;                                                  # remove after install
@@ -103,6 +63,42 @@ sub srvdir     { shift; $srvdir = $_[0] if @_; return $srvdir; };
 
 
 __END__
+
+=head1 NAME
+
+SPc - build-time system path configuration
+
+=head1 PATHS
+
+See L<Sys::Path/PATHS for details>
+
+=head2 prefix
+
+=head2 localstatedir
+
+=head2 sysconfdir
+
+=head2 datadir
+
+=head2 docdir
+
+=head2 localedir
+
+=head2 cachedir
+
+=head2 logdir
+
+=head2 spooldir
+
+=head2 rundir
+
+=head2 lockdir
+
+=head2 sharedstatedir
+
+=head2 webdir
+
+=head2 srvdir
 
 =head1 AUTHOR
 

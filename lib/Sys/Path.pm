@@ -1,5 +1,130 @@
 package Sys::Path;
 
+use warnings;
+use strict;
+
+our $VERSION = '0.11';
+
+use File::Spec;
+use Text::Diff 'diff';
+use JSON::Util;
+use Digest::MD5 qw(md5_hex);
+use List::MoreUtils 'any', 'none';
+use Carp 'croak';
+
+use base 'Sys::Path::SPc';
+
+sub find_distribution_root {
+    my $self        = shift;
+    my $module_name = shift;
+    
+    croak 'pass module_name as argument'
+        if not $module_name;
+    
+    my $module_filename = $module_name.'.pm';
+    $module_filename =~ s{::}{/}g;
+    if (not exists $INC{$module_filename}) {
+        eval 'use '.$module_name;
+        die $@ if $@;
+    }
+    $module_filename = File::Spec->rel2abs($INC{$module_filename});
+    
+    my @path = File::Spec->splitdir($module_filename);
+    my @package_names = split('::',$module_name);
+    @path = splice(@path,0,-1-@package_names);
+    while (
+        (not -d File::Spec->catdir(@path, 't'))
+        and (not -f File::Spec->catdir(@path, 'Build.PL'))
+        and (not -f File::Spec->catdir(@path, 'Makefile.PL'))
+    ) {
+        pop @path;
+        die 'failed to find distribution root'
+            if not @path;
+    }
+    return File::Spec->catdir(@path);
+}
+
+sub prompt_cfg_file_changed {
+    my $self     = shift;
+    my $src_file = shift;
+    my $dst_file = shift;
+    my $prompt_function = shift;
+
+    my $answer = '';
+    while (none { $answer eq $_ } qw(Y I N O) ) {
+        print qq{
+Installing new version of config file $dst_file ...
+
+Configuration file `$dst_file'
+ ==> Modified (by you or by a script) since installation.
+ ==> Package distributor has shipped an updated version.
+   What would you like to do about it ?  Your options are:
+    Y or I  : install the package maintainer's version
+    N or O  : keep your currently-installed version
+      D     : show the differences between the versions
+      Z     : background this process to examine the situation
+ The default action is to keep your current version.
+};
+    
+        $answer = uc $prompt_function->('*** '.$dst_file.' (Y/I/N/O/D/Z) ?', 'N');
+        if ($answer eq 'D') {
+            print "\n\n";
+            print diff($src_file, $dst_file, { STYLE => 'Unified' });
+            print "\n";
+        }
+        elsif ($answer eq 'Z') {
+            print "Type `exit' when you're done.\n";
+            system('bash');
+        }
+    }
+
+    return 1 if any { $answer eq $_ } qw(Y I);
+    return 0;
+}
+
+sub changed_since_install {
+    my $self      = shift;
+    my $dest_file = shift;
+    my $file      = shift || $dest_file;
+
+    my %files_checksums = $self->install_checksums;
+    my $checksum = md5_hex(IO::Any->slurp([$file]));
+    $files_checksums{$dest_file} ||= '';
+    return $files_checksums{$dest_file} ne $checksum;
+}
+
+sub install_checksums {
+    my $self = shift;
+    my @args = @_;
+    my $checksums_filename = File::Spec->catfile(
+        Sys::Path::SPc->sharedstatedir,
+        'syspath',
+        'install-checksums.json'
+    );
+
+    if (@args) {
+        print 'Updating ', $checksums_filename, "\n";
+        my %conffiles_md5 = (
+            $self->install_checksums,
+            @args,
+        );
+        JSON::Util->encode(\%conffiles_md5, [ $checksums_filename ]);
+        return %conffiles_md5;
+    }
+    
+    # create empty json file if non available
+    JSON::Util->encode({}, [ $checksums_filename ])
+        if not -f $checksums_filename;
+    
+    return %{JSON::Util->decode([ $checksums_filename ])};
+}
+
+
+1;
+
+
+__END__
+
 =encoding utf-8
 
 =head1 NAME
@@ -199,22 +324,6 @@ to C<$Config::Config{'prefix'}> which is the prefix of Perl that was used
 to install. In this case C<sysconfdir> is set to C<prefix+'etc'>.
 See L<Sys::Path::SPc> for the implementation.
 
-=cut
-
-use warnings;
-use strict;
-
-our $VERSION = '0.11';
-
-use File::Spec;
-use Text::Diff 'diff';
-use JSON::Util;
-use Digest::MD5 qw(md5_hex);
-use List::MoreUtils 'any', 'none';
-use Carp 'croak';
-
-use base 'Sys::Path::SPc';
-
 =head1 METHODS
 
     prefix
@@ -232,8 +341,6 @@ use base 'Sys::Path::SPc';
     webdir
     srvdir
 
-=cut
-
 =head1 BUILDERS/INSTALLERS helper methods
 
 =head2 find_distribution_root(__PACKAGE__)
@@ -241,139 +348,19 @@ use base 'Sys::Path::SPc';
 Find the root folder of a modules distribution by going up the
 folder structure.
 
-=cut
-
-sub find_distribution_root {
-    my $self        = shift;
-    my $module_name = shift;
-    
-    croak 'pass module_name as argument'
-        if not $module_name;
-    
-    my $module_filename = $module_name.'.pm';
-    $module_filename =~ s{::}{/}g;
-    if (not exists $INC{$module_filename}) {
-        eval 'use '.$module_name;
-        die $@ if $@;
-    }
-    $module_filename = File::Spec->rel2abs($INC{$module_filename});
-    
-    my @path = File::Spec->splitdir($module_filename);
-    my @package_names = split('::',$module_name);
-    @path = splice(@path,0,-1-@package_names);
-    while (
-        (not -d File::Spec->catdir(@path, 't'))
-        and (not -f File::Spec->catdir(@path, 'Build.PL'))
-        and (not -f File::Spec->catdir(@path, 'Makefile.PL'))
-    ) {
-        pop @path;
-        die 'failed to find distribution root'
-            if not @path;
-    }
-    return File::Spec->catdir(@path);
-}
-
 =head2 prompt_cfg_file_changed($src_file, $dst_file, $prompt_function)
 
 Will prompt if to overwrite C<$dst_file> with C<$src_file>. Returns
 true for "yes" and false for "no".
-
-=cut
-
-sub prompt_cfg_file_changed {
-    my $self     = shift;
-    my $src_file = shift;
-    my $dst_file = shift;
-    my $prompt_function = shift;
-
-    my $answer = '';
-    while (none { $answer eq $_ } qw(Y I N O) ) {
-        print qq{
-Installing new version of config file $dst_file ...
-
-Configuration file `$dst_file'
- ==> Modified (by you or by a script) since installation.
- ==> Package distributor has shipped an updated version.
-   What would you like to do about it ?  Your options are:
-    Y or I  : install the package maintainer's version
-    N or O  : keep your currently-installed version
-      D     : show the differences between the versions
-      Z     : background this process to examine the situation
- The default action is to keep your current version.
-};
-    
-        $answer = uc $prompt_function->('*** '.$dst_file.' (Y/I/N/O/D/Z) ?', 'N');
-        if ($answer eq 'D') {
-            print "\n\n";
-            print diff($src_file, $dst_file, { STYLE => 'Unified' });
-            print "\n";
-        }
-        elsif ($answer eq 'Z') {
-            print "Type `exit' when you're done.\n";
-            system('bash');
-        }
-    }
-
-    return 1 if any { $answer eq $_ } qw(Y I);
-    return 0;
-}
-
 
 =head2 changed_since_install($dest_file, $file)
 
 Return if C<$dest_file> changed since install. If optional C<$file> is
 set then this one is compared against install C<$dest_file> checksum.
 
-=cut
-
-sub changed_since_install {
-    my $self      = shift;
-    my $dest_file = shift;
-    my $file      = shift || $dest_file;
-
-    my %files_checksums = $self->install_checksums;
-    my $checksum = md5_hex(IO::Any->slurp([$file]));
-    $files_checksums{$dest_file} ||= '';
-    return $files_checksums{$dest_file} ne $checksum;
-}
-
 =head2 install_checksums(%filenames_with_checksums)
 
 Getter and setter for files checksums recording.
-
-=cut
-
-sub install_checksums {
-    my $self = shift;
-    my @args = @_;
-    my $checksums_filename = File::Spec->catfile(
-        Sys::Path::SPc->sharedstatedir,
-        'syspath',
-        'install-checksums.json'
-    );
-
-    if (@args) {
-        print 'Updating ', $checksums_filename, "\n";
-        my %conffiles_md5 = (
-            $self->install_checksums,
-            @args,
-        );
-        JSON::Util->encode(\%conffiles_md5, [ $checksums_filename ]);
-        return %conffiles_md5;
-    }
-    
-    # create empty json file if non available
-    JSON::Util->encode({}, [ $checksums_filename ])
-        if not -f $checksums_filename;
-    
-    return %{JSON::Util->decode([ $checksums_filename ])};
-}
-
-
-1;
-
-
-__END__
 
 =head1 SEE ALSO
 
