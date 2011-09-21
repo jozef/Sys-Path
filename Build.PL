@@ -12,6 +12,9 @@ my $builder = inc::MyBuilder->new(
     license             => 'perl',
     dist_author         => 'Jozef Kutej <jkutej@cpan.org>',
     dist_version_from   => 'lib/Sys/Path.pm',
+    configure_requires => {
+        'Module::Build' => '0.3607',
+    },
     requires => {
         'File::Spec'      => 0,
         'List::MoreUtils' => 0,
@@ -19,6 +22,7 @@ my $builder = inc::MyBuilder->new(
         'JSON::Util'      => 0,
         'Digest::MD5'     => 0,
         'Text::Diff'      => 0,
+        'Cwd'             => 0,
     },
     build_requires => {
         'Test::More'      => 0,

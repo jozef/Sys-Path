@@ -1,5 +1,9 @@
 Revision history for Sys-Path
 
+0.12    21 Sep 2011
+        - find distribution root even when distribution lib/ path is not in @INC
+          (thanks to Salve J. Nilsen)
+
 0.11    10 Aug 2011
         - now considering Build.PL and Makefile.PL when finding distribution root
           (needed for `./Build disttest` where the t/ folder is not copied)

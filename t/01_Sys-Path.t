@@ -11,6 +11,7 @@ use Test::Exception;
 use File::Temp;
 use File::Path 'make_path';
 use Capture::Tiny 'capture_merged';
+use Cwd;
 
 use FindBin '$Bin';
 use lib File::Spec->catfile($Bin, '..', 'lib');
@@ -54,7 +55,7 @@ sub main {
     like(Sys::Path->find_distribution_root('TestDR::build'), qr/v1$/, 'find_distribution_root()');
     like(Sys::Path->find_distribution_root('TestDR::makefile'), qr/v2$/, 'find_distribution_root()');
     like(Sys::Path->find_distribution_root('TestDR::F::F2::t'), qr/v3$/, 'find_distribution_root()');
-    dies_ok { Sys::Path->find_distribution_root('TestDR::non-existing') } 'exception on non-existing module';
+    is(Sys::Path->find_distribution_root('TestDR::non-existing'), cwd, 'start at cwd for the rest');
     
     my $prompt_reply;
     my $output = capture_merged {

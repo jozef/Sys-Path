@@ -3,14 +3,15 @@ package Sys::Path;
 use warnings;
 use strict;
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 use File::Spec;
 use Text::Diff 'diff';
 use JSON::Util;
 use Digest::MD5 qw(md5_hex);
 use List::MoreUtils 'any', 'none';
-use Carp 'croak';
+use Carp 'croak', 'confess';
+use Cwd 'cwd';
 
 use base 'Sys::Path::SPc';
 
@@ -23,22 +24,28 @@ sub find_distribution_root {
     
     my $module_filename = $module_name.'.pm';
     $module_filename =~ s{::}{/}g;
-    if (not exists $INC{$module_filename}) {
-        eval 'use '.$module_name;
-        die $@ if $@;
-    }
-    $module_filename = File::Spec->rel2abs($INC{$module_filename});
+    eval 'use '.$module_name
+        unless $INC{$module_filename};
     
-    my @path = File::Spec->splitdir($module_filename);
-    my @package_names = split('::',$module_name);
-    @path = splice(@path,0,-1-@package_names);
+    my @path;
+    if ($INC{$module_filename}) {
+        $module_filename = File::Spec->rel2abs($INC{$module_filename});
+        
+        @path = File::Spec->splitdir($module_filename);
+        my @package_names = split('::',$module_name);
+        @path = splice(@path,0,-1-@package_names);
+    }
+    else {
+        @path = File::Spec->splitdir(cwd);
+    }
+    
     while (
-        (not -d File::Spec->catdir(@path, 't'))
+        (not -f File::Spec->catdir(@path, 'MANIFEST'))
         and (not -f File::Spec->catdir(@path, 'Build.PL'))
         and (not -f File::Spec->catdir(@path, 'Makefile.PL'))
     ) {
         pop @path;
-        die 'failed to find distribution root'
+        confess 'failed to find distribution root'
             if not @path;
     }
     return File::Spec->catdir(@path);
@@ -379,6 +386,7 @@ order):
 
     Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯
     Emmanuel Rodriguez
+    Salve J. Nilsen
 
 =head1 COPYRIGHT & LICENSE
 

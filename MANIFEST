@@ -5,6 +5,7 @@ inc/MyBuilder.pm
 lib/Sys/Path.pm
 lib/Sys/Path/SPc.pm
 MANIFEST			This list of files
+META.json
 META.yml
 README
 t/01_Sys-Path.t
@@ -15,9 +16,9 @@ t/libs/v1/lib/TestDR/build.pm
 t/libs/v2/lib/TestDR/makefile.pm
 t/libs/v2/Makefile.PL
 t/libs/v3/lib/TestDR/F/F2/t.pm
+t/libs/v3/MANIFEST
 t/libs/v3/t/.exists
 t/pod-coverage.t
 t/pod-spell.t
 t/pod.t
 varlib/syspath/.exists
-META.json
