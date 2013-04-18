@@ -34,7 +34,6 @@ my $builder = inc::MyBuilder->new(
     },
     add_to_cleanup      => [ 'Sys-Path-*' ],
     create_readme       => 1,
-    sign                => 1,
     get_options         => {
         'sp-prefix'        => { type => '=s' },
         'sp-localstatedir' => { type => '=s' },
