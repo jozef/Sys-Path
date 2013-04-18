@@ -63,6 +63,18 @@ my $builder = inc::MyBuilder->new(
 my @path_types = Sys::Path::SPc->_path_types;
 $builder->notes('path_types' => join('|', @path_types));
 
+print qq{
+Configuring Sys::Path distribution
+
+This module tells other perl modules/scripts where your common system
+files are, and will supply reasonable guesses. If unsure just hit enter
+to each of these.
+
+For more information about the meaning, check Sys::Path documentation:
+http://search.cpan.org/perldoc?Sys%3A%3APath#PATHS
+
+};
+
 foreach my $path_type (@path_types) {
     my $path = $builder->args('sp-'.$path_type);
     $path = $builder->prompt($path_type, Sys::Path::SPc->$path_type)

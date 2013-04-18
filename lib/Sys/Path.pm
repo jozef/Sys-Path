@@ -3,7 +3,7 @@ package Sys::Path;
 use warnings;
 use strict;
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 use File::Spec;
 use Text::Diff 'diff';
@@ -387,6 +387,7 @@ order):
     Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯
     Emmanuel Rodriguez
     Salve J. Nilsen
+    Daniel Perrett
 
 =head1 COPYRIGHT & LICENSE
 

@@ -1,5 +1,9 @@
 Revision history for Sys-Path
 
+0.13    18 Apr 2013
+        - add note before promting users during distribution installation
+          (thanks to Daniel Perrett)
+
 0.12    21 Sep 2011
         - find distribution root even when distribution lib/ path is not in @INC
           (thanks to Salve J. Nilsen)
