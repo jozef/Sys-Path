@@ -3,7 +3,7 @@ package Sys::Path::SPc;
 use warnings;
 use strict;
 
-our $VERSION = '0.12';
+our $VERSION = '0.14';
 
 use File::Spec;
 
