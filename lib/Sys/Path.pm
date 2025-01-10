@@ -9,7 +9,7 @@ use File::Spec;
 use Text::Diff 'diff';
 use JSON::Util;
 use Digest::MD5 qw(md5_hex);
-use List::MoreUtils 'any', 'none';
+use List::Util 'any', 'none';
 use Carp 'croak', 'confess';
 use Cwd 'cwd';
 

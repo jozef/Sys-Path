@@ -18,7 +18,7 @@ my $builder = inc::MyBuilder->new(
     },
     requires => {
         'File::Spec'      => 0,
-        'List::MoreUtils' => 0,
+        'List::Util'      => '1.33',
         'Text::Diff'      => 0,
         'JSON::Util'      => 0,
         'Digest::MD5'     => 0,
