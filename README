@@ -204,6 +204,10 @@ BUILD AND INSTALLATION HELPERS
     start at the current working directory. Return the first matching
     directory; throw an exception if no distribution root is found.
 
+    The current-working-directory fallback applies only when the named
+    module is not installed. Errors raised while compiling or initializing
+    an installed module are propagated.
+
     $module_name is required. Loading a module can execute its compile-time
     code.
 

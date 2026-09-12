@@ -27,8 +27,11 @@ sub find_distribution_root {
     
     my $module_filename = $module_name.'.pm';
     $module_filename =~ s{::}{/}g;
-    eval 'use '.$module_name
-        unless $INC{$module_filename};
+    unless ($INC{$module_filename}) {
+        eval { require $module_filename };
+        die $@
+            if $@ and $@ !~ /\ACan't locate \Q$module_filename\E in \@INC\b/;
+    }
     
     my @path;
     if ($INC{$module_filename}) {
@@ -36,6 +39,7 @@ sub find_distribution_root {
         
         @path = File::Spec->splitdir($module_filename);
         my @package_names = split('::',$module_name);
+        # Remove the module filename and its namespace directories.
         @path = splice(@path,0,-1-@package_names);
     }
     else {
@@ -370,6 +374,10 @@ Load the named module if necessary, then search its parent directories for
 F<MANIFEST>, F<Build.PL>, or F<Makefile.PL>. If the module cannot be loaded,
 start at the current working directory. Return the first matching directory;
 throw an exception if no distribution root is found.
+
+The current-working-directory fallback applies only when the named module is
+not installed. Errors raised while compiling or initializing an installed
+module are propagated.
 
 C<$module_name> is required. Loading a module can execute its compile-time
 code.

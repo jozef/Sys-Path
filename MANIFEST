@@ -20,6 +20,7 @@ t/libs/v2/Makefile.PL
 t/libs/v3/lib/TestDR/F/F2/t.pm
 t/libs/v3/MANIFEST
 t/libs/v3/t/.exists
+t/libs/v4/lib/TestDR/broken.pm
 varlib/syspath/.exists
 xt/distribution.t
 xt/fixme.t

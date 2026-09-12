@@ -19,6 +19,7 @@ use lib File::Spec->catfile($Bin, '..', 'lib');
 use lib File::Spec->catfile($Bin, 'libs', 'v1', 'lib');
 use lib File::Spec->catfile($Bin, 'libs', 'v2', 'lib');
 use lib File::Spec->catfile($Bin, 'libs', 'v3', 'lib');
+use lib File::Spec->catfile($Bin, 'libs', 'v4', 'lib');
 
 our @system_args;
 BEGIN {
@@ -65,6 +66,10 @@ sub main {
     like(Sys::Path->find_distribution_root('TestDR::makefile'), qr/v2$/, 'find_distribution_root()');
     like(Sys::Path->find_distribution_root('TestDR::F::F2::t'), qr/v3$/, 'find_distribution_root()');
     is(Sys::Path->find_distribution_root('TestDR::non-existing'), File::Spec->canonpath(cwd), 'start at cwd for the rest');
+    throws_ok {
+        Sys::Path->find_distribution_root('TestDR::broken')
+    } qr/intentional module load failure/,
+        'find_distribution_root propagates module load failures';
     
     my $prompt_reply;
     my $output = capture_merged {
