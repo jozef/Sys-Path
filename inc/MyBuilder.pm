@@ -78,10 +78,7 @@ backslashes remain valid. The generated file is made read-only.
 
 Run the parent installation action, then create F<syspath> beneath the mapped
 C<sharedstatedir> installation destination. This directory stores
-F<install-checksums.json>.
-
-Current limitation: the destination comes from the derived
-C<Sys::Path::SPc::sharedstatedir> value, not a separately selected
-C<sharedstatedir>. Those paths can therefore differ during installation.
+F<install-checksums.json>. The destination matches the C<sharedstatedir>
+selected during configuration.
 
 =cut

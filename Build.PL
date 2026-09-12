@@ -84,7 +84,8 @@ foreach my $path_type (@path_types) {
     print $path_type, ' set to: ', $path, "\n";
 }
 
-$builder->{'properties'}->{'install_path'}->{'sharedstatedir'} = Sys::Path::SPc->sharedstatedir;
+$builder->{'properties'}->{'install_path'}->{'sharedstatedir'}
+    = $builder->notes('sharedstatedir');
 $builder->add_build_element('sharedstatedir');
 
 $builder->create_build_script();
