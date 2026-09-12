@@ -8,6 +8,7 @@ Revision history for Sys-Path
         - Used the user's login shell when examining configuration changes
         - Propagated errors raised while loading modules to find their
           distribution roots
+        - Added syspath.pl to print configured path keys and values
 
 0.16    13 October 2017
         - Fixed builds when Perl omits "." from @INC

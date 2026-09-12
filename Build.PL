@@ -50,6 +50,7 @@ my $builder = inc::MyBuilder->new(
     },
     add_to_cleanup      => [ 'Sys-Path-*' ],
     create_readme       => 1,
+    script_files        => [ 'script/syspath.pl' ],
     get_options         => { %path_options, %alias_options },
     meta_merge => {
         resources => {
