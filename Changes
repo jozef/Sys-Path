@@ -1,6 +1,6 @@
 Revision history for Sys-Path
 
-0.17    TBD
+0.17    12 September 2026
         - Serialized checksum-registry access and published updates atomically
         - Preserved quotes and backslashes in generated path constants
         - Honored configured shared-state paths during installation
