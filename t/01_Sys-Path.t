@@ -43,7 +43,7 @@ sub main {
     is(Sys::Path::SPc->sysconfdir, $sysconf, 'tmp setters');
     is(Sys::Path::SPc->srvdir, $srv, 'tmp setters');
     
-    # create all folder types
+    # Create every configured directory so later file operations can run.
     foreach my $path_type (Sys::Path::SPc->_path_types) {
         make_path(Sys::Path::SPc->$path_type);
     }
@@ -85,4 +85,3 @@ sub main {
     
     return 0;
 }
-

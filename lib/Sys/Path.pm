@@ -3,7 +3,7 @@ package Sys::Path;
 use warnings;
 use strict;
 
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 use File::Spec;
 use Text::Diff 'diff';
@@ -119,7 +119,7 @@ sub install_checksums {
         return %conffiles_md5;
     }
     
-    # create empty json file if non available
+    # Initialize the registry on first access, including reads.
     JSON::Util->encode({}, [ $checksums_filename ])
         if not -f $checksums_filename;
     
@@ -136,11 +136,11 @@ __END__
 
 =head1 NAME
 
-Sys::Path - supply autoconf style installation directories
+Sys::Path - provide autoconf-style installation directories
 
 =head1 SYNOPSIS
 
-Paths for basic Unix installation when Perl is in /usr/bin:
+Default paths when Perl's installation prefix is F</usr>:
 
     use Sys::Path;
 
@@ -153,42 +153,42 @@ Paths for basic Unix installation when Perl is in /usr/bin:
     print Sys::Path->sharedstatedir, "\n";
     # /var/lib
 
-Paths for Unix when Perl is in home folder /home/daxim/local/bin:
+Default paths when Perl's installation prefix is F</home/daxim/local>:
 
     print Sys::Path->sysconfdir, "\n";
     # /home/daxim/local/etc
     print Sys::Path->datadir, "\n";
     # /home/daxim/local/share
     print Sys::Path->logdir, "\n";
-    # /home/daxim/local/log
+    # /home/daxim/local/var/log
     print Sys::Path->sharedstatedir, "\n";
-    # /home/daxim/local/lib
+    # /home/daxim/local/var/lib
 
-Paths for MS Windows Strawberry Perl when installed to C:\Strawberry\
+Default paths when Strawberry Perl's installation prefix is F<C:\Strawberry>:
 
     print Sys::Path->sysconfdir, "\n";
     # C:\Strawberry\etc
     print Sys::Path->datadir, "\n";
     # C:\Strawberry\share
     print Sys::Path->logdir, "\n";
-    # C:\Strawberry\log
+    # C:\Strawberry\var\log
     print Sys::Path->sharedstatedir, "\n";
-    # C:\Strawberry\lib
+    # C:\Strawberry\var\lib
 
 =head1 DESCRIPTION
 
-The goal is that Sys::Path provides autoconf style system paths.
+Sys::Path provides a common set of installation-directory accessors. When
+Perl's installation prefix is F</usr>, their defaults follow the
+L<Filesystem Hierarchy Standard|http://www.pathname.com/fhs/>. Otherwise,
+defaults are derived from Perl's own prefix.
 
-The default paths for file locations are based on L<http://www.pathname.com/fhs/>
-(Filesystem Hierarchy Standard) if the Perl was installed in F</usr>. For
-all other non-standard Perl installations or systems the default prefix is
-the prefix of Perl it self. Still those are just defaults and can be changed
-during C<perl Build.PL> prompting. After L<Sys::Path> is configured and installed
-all programs using it can just read/use the paths.
+C<perl Build.PL> prompts for each path. The build writes the selected values
+into C<Sys::Path::SPc>, so installed consumers read the values configured for
+this Sys::Path installation.
 
-In addition L<Sys::Path> includes some functions that are related to modules
-build or installation. For now there is only L<Module::Build> based L<Module::Build::SysPath>
-that uses L<Sys::Path>.
+The module also provides helper methods for distribution builds and
+configuration-file installation. L<Module::Build::SysPath> integrates these
+methods with L<Module::Build>.
 
 =head1 BUILD TIME CONFIGURATION
 
@@ -197,57 +197,52 @@ that uses L<Sys::Path>.
         --sp-sysconfdir=/usr/local/etc \
         --sp-localstatedir=/var/local
 
-=head1 NOTE
+=head1 STATUS
 
-This is an experiment and lot of questions and concerns can come out about
-the paths configuration. Distributions build systems integration and the naming.
-And as this is early version things may change. For these purposes there
-is a mailing list L<http://lists.meon.sk/mailman/listinfo/sys-path>.
+Sys::Path was published as an experiment in system-path configuration, build
+system integration, and path naming. The original documentation warned that
+its interfaces might change and directed discussion to
+L<http://lists.meon.sk/mailman/listinfo/sys-path>.
 
 =head2 WHY?
 
-The filesystem standard has been designed to be used by Unix distribution developers,
-package developers, and system implementors. However, it is primarily intended
-to be a reference and is not a tutorial on how to manage a Unix filesystem or directory
-hierarchy.
-
-L<Sys::Path> follows this standard when it is possible. Or when Perl follows.
-Perl can be installed in many places. Most Linux distributions place Perl
-in F</usr/bin/perl> where FHS suggest. In this case the FHS folders are
-suggested in prompt when doing `C<perl Build.PL>`. In other cases for
-other folders or home-folder Perl distributions L<Sys::Path> will suggest
-folders under Perl install prefix. (ex. F<c:\strawerry\> for the ones using
-Windows).
+The Filesystem Hierarchy Standard defines shared directory locations for Unix
+distributions, packages, and systems. Sys::Path uses those locations when
+Perl's prefix is F</usr>. For other installations, including a Perl installed
+under a home directory or F<C:\Strawberry>, it derives defaults beneath Perl's
+prefix. This keeps a non-system Perl installation self-contained by default.
 
 =head2 PATHS
 
-Here is the list of paths. First the default FHS path, then (to compare)
-a suggested path when Perl is not installed in F</usr>.
+Each entry lists the default for a Perl prefix of F</usr>, followed by the
+default for any other prefix.
 
 =head3 prefix
 
 F</usr> - C<$Config::Config{'prefix'}>
 
-Is a helper function and should not be used directly.
+Base path used to derive several other paths. Applications should normally use
+the more specific accessors below.
 
 =head3 localstatedir
 
-F</var> - C<$Config::Config{'prefix'}>
+F</var> - $prefix/var
 
-Is a helper function and should not be used directly.
+Base path used for variable data. Applications should normally use the more
+specific accessors below.
 
 =head3 sysconfdir
 
 F</etc> - $prefix/etc
 
-The /etc hierarchy contains configuration files.
+Host-specific system configuration.
 See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#ETCHOSTSPECIFICSYSTEMCONFIGURATION>.
 
 =head3 datadir
 
 F</usr/share> - $prefix/share
 
-The /usr/share hierarchy is for all read-only architecture independent data files.
+Read-only, architecture-independent data.
 See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#USRSHAREARCHITECTUREINDEPENDENTDATA>.
 
 =head3 docdir
@@ -266,70 +261,69 @@ See L</datadir>
 
 F</var/cache> - $localstatedir/cache
 
-/var/cache is intended for cached data from applications.
+Application cache data.
 See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#VARCACHEAPPLICATIONCACHEDATA>.
 
 =head3 logdir
 
-F</var/log> - $localstatedir/logdir
+F</var/log> - $localstatedir/log
 
-This directory contains miscellaneous log files. Most logs must be written to this directory or an appropriate subdirectory.
+Application log files.
 See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#VARLOGLOGFILESANDDIRECTORIES>.
 
 =head3 spooldir
 
 F</var/spool> - $localstatedir/spool
 
-Contains data which is awaiting some kind of later processing.
+Data awaiting later processing.
 See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#VARSPOOLAPPLICATIONSPOOLDATA>.
 
 =head3 rundir
 
-F</var/run> - $localstatedir/rundir
+F</var/run> - $localstatedir/run
 
-This directory contains system information data describing the system since it was booted.
+Runtime state describing the system since boot.
 See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#VARRUNRUNTIMEVARIABLEDATA>.
 
 =head3 lockdir
 
 F</var/lock> - $localstatedir/lock
 
-Lock files folder.
+Lock files.
 See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#VARLOCKLOCKFILES>.
 
 =head3 sharedstatedir
 
 F</var/lib> - $localstatedir/lib
 
-The directory for installing modifiable architecture-independent data.
+Modifiable, architecture-independent application state.
 See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#VARLIBVARIABLESTATEINFORMATION>.
 
 =head3 srvdir
 
 F</srv> - $prefix/srv
 
-Data for services provided by system.
+Data served by the system.
 See L<http://www.pathname.com/fhs/pub/fhs-2.3.html#SRVDATAFORSERVICESPROVIDEDBYSYSTEM>.
 
 =head3 webdir
 
 F</var/www> - $localstatedir/www
 
-Directory where distribution put static web files.
+Static web content installed by distributions.
 
 =head2 HOW IT WORKS
 
-The heart of L<Sys::Path> is just:
+Default selection starts with Perl's configured prefix:
 
     use Config;
-    if ($Config::Config{'prefix'} eq '/usr') { ... do stuff ... }
+    if ($Config::Config{'prefix'} eq '/usr') { ... }
 
-The idea is that if the Perl was installed to F</usr> it is FHS type
-installation and all path defaults are made based on FHS. For the
-rest of the installations C<prefix> and C<localstatedir> is set exactly
-to C<$Config::Config{'prefix'}> which is the prefix of Perl that was used
-to install. In this case C<sysconfdir> is set to C<prefix+'etc'>.
-See L<Sys::Path::SPc> for the implementation.
+For a prefix of F</usr>, Sys::Path selects the listed FHS defaults. For any
+other prefix, C<localstatedir> is F<var> beneath that prefix, and the remaining
+defaults are derived from C<prefix> or C<localstatedir> as shown above.
+L<Sys::Path::SPc> implements the accessors; the build replaces its temporary
+configuration logic with the selected literal values.
 
 =head1 METHODS
 
@@ -348,26 +342,48 @@ See L<Sys::Path::SPc> for the implementation.
     webdir
     srvdir
 
-=head1 BUILDERS/INSTALLERS helper methods
+=head1 BUILD AND INSTALLATION HELPERS
 
 =head2 find_distribution_root(__PACKAGE__)
 
-Find the root folder of a modules distribution by going up the
-folder structure.
+Load the named module if necessary, then search its parent directories for
+F<MANIFEST>, F<Build.PL>, or F<Makefile.PL>. If the module cannot be loaded,
+start at the current working directory. Return the first matching directory;
+throw an exception if no distribution root is found.
+
+C<$module_name> is required. Loading a module can execute its compile-time
+code.
 
 =head2 prompt_cfg_file_changed($src_file, $dst_file, $prompt_function)
 
-Will prompt if to overwrite C<$dst_file> with C<$src_file>. Returns
-true for "yes" and false for "no".
+Ask whether C<$src_file> should replace the modified C<$dst_file>. The callback
+receives the prompt text and the default answer, C<N>. Return true for C<Y> or
+C<I>, and false for C<N> or C<O>.
+
+C<D> prints a unified diff and prompts again. C<Z> starts C<bash> and prompts
+again after the shell exits. These options write directly to standard output.
 
 =head2 changed_since_install($dest_file, $file)
 
-Return if C<$dest_file> changed since install. If optional C<$file> is
-set then this one is compared against install C<$dest_file> checksum.
+Return true when the MD5 checksum of C<$file> differs from the checksum
+recorded for C<$dest_file>. C<$file> defaults to C<$dest_file>. A destination
+without a recorded checksum is considered changed.
+
+The method reads the entire comparison file and propagates read and decode
+errors from its dependencies.
 
 =head2 install_checksums(%filenames_with_checksums)
 
-Getter and setter for files checksums recording.
+Return the filename/checksum pairs stored in
+F<sharedstatedir/syspath/install-checksums.json>. With arguments, merge the
+supplied pairs into the registry and return the resulting pairs.
+
+The parent directory must already exist. Reading a missing registry creates an
+empty JSON file and therefore requires write permission.
+
+Current limitation: registry initialization and updates are neither atomic nor
+synchronized. Concurrent callers can lose updates or observe incomplete data;
+callers must serialize all access externally.
 
 =head1 SEE ALSO
 
@@ -378,11 +394,9 @@ L<Module::Build::SysPath>
 Jozef Kutej, C<< <jkutej at cpan.org> >>
 
 =head1 CONTRIBUTORS
- 
-The following people have contributed to the Sys::Path by committing their
-code, sending patches, reporting bugs, asking questions, suggesting useful
-advises, nitpicking, chatting on IRC or commenting on my blog (in no particular
-order):
+
+The following people contributed code, patches, bug reports, questions, and
+suggestions (in no particular order):
 
     Lars Dɪᴇᴄᴋᴏᴡ 迪拉斯
     Emmanuel Rodriguez
