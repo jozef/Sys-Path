@@ -14,6 +14,7 @@ use List::Util 'any', 'none';
 use Carp 'croak', 'confess';
 use Cwd 'cwd';
 use Fcntl 'LOCK_EX';
+use Shell::Guess;
 
 use base 'Sys::Path::SPc';
 
@@ -83,7 +84,7 @@ Configuration file `$dst_file'
         }
         elsif ($answer eq 'Z') {
             print "Type `exit' when you're done.\n";
-            system('bash');
+            system(Shell::Guess->login_shell->default_location);
         }
     }
 
@@ -129,6 +130,7 @@ sub install_checksums {
             [ $checksums_filename ],
             { atomic => 1 },
         );
+        close($lock_fh) or die 'failed to clean lock file';
         return %conffiles_md5;
     }
 
@@ -136,6 +138,7 @@ sub install_checksums {
     JSON::Util->encode({}, [ $checksums_filename ], { atomic => 1 })
         if not -f $checksums_filename;
 
+    close($lock_fh) or die 'failed to clean lock file';
     return %conffiles_md5;
 }
 
@@ -377,8 +380,9 @@ Ask whether C<$src_file> should replace the modified C<$dst_file>. The callback
 receives the prompt text and the default answer, C<N>. Return true for C<Y> or
 C<I>, and false for C<N> or C<O>.
 
-C<D> prints a unified diff and prompts again. C<Z> starts C<bash> and prompts
-again after the shell exits. These options write directly to standard output.
+C<D> prints a unified diff and prompts again. C<Z> starts the user's login shell
+and prompts again after the shell exits. These options write directly to
+standard output.
 
 =head2 changed_since_install($dest_file, $file)
 

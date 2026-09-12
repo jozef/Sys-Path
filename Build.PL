@@ -39,6 +39,7 @@ my $builder = inc::MyBuilder->new(
         'Digest::MD5'     => 0,
         'Text::Diff'      => 0,
         'Cwd'             => 0,
+        'Shell::Guess'    => 0,
     },
     build_requires => {
         'Test::More'      => 0,

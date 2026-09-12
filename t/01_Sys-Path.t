@@ -12,12 +12,21 @@ use File::Temp;
 use File::Path 'make_path';
 use Capture::Tiny 'capture_merged';
 use Cwd;
+use Shell::Guess;
 
 use FindBin '$Bin';
 use lib File::Spec->catfile($Bin, '..', 'lib');
 use lib File::Spec->catfile($Bin, 'libs', 'v1', 'lib');
 use lib File::Spec->catfile($Bin, 'libs', 'v2', 'lib');
 use lib File::Spec->catfile($Bin, 'libs', 'v3', 'lib');
+
+our @system_args;
+BEGIN {
+    *CORE::GLOBAL::system = sub {
+        @system_args = @_;
+        return 0;
+    };
+}
 
 BEGIN {
     use_ok ( 'Sys::Path' ) or exit;
@@ -67,6 +76,21 @@ sub main {
         $prompt_reply = Sys::Path->prompt_cfg_file_changed('src', 'dst', sub { 'N' })
     };
     ok(!$prompt_reply, 'prompt test');
+
+    my $shell = File::Spec->catfile('path', 'to', 'login-shell');
+    my @answers = qw(Z N);
+    {
+        no warnings 'redefine';
+        local *Shell::Guess::login_shell = sub {
+            return TestShellGuess->new($shell);
+        };
+        capture_merged {
+            Sys::Path->prompt_cfg_file_changed(
+                'src', 'dst', sub { shift @answers }
+            );
+        };
+    }
+    is_deeply(\@system_args, [$shell], 'Z starts the detected login shell');
     
     mkdir(File::Spec->catfile(Sys::Path::SPc->sharedstatedir, 'syspath'));
     Sys::Path->install_checksums(
@@ -84,4 +108,18 @@ sub main {
     );
     
     return 0;
+}
+
+{
+    package TestShellGuess;
+
+    sub new {
+        my ($class, $location) = @_;
+        return bless { location => $location }, $class;
+    }
+
+    sub default_location {
+        my $self = shift;
+        return $self->{location};
+    }
 }

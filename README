@@ -212,9 +212,9 @@ BUILD AND INSTALLATION HELPERS
     callback receives the prompt text and the default answer, "N". Return
     true for "Y" or "I", and false for "N" or "O".
 
-    "D" prints a unified diff and prompts again. "Z" starts "bash" and
-    prompts again after the shell exits. These options write directly to
-    standard output.
+    "D" prints a unified diff and prompts again. "Z" starts the user's login
+    shell and prompts again after the shell exits. These options write
+    directly to standard output.
 
   changed_since_install($dest_file, $file)
     Return true when the MD5 checksum of $file differs from the checksum
