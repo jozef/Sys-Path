@@ -227,10 +227,8 @@ BUILD AND INSTALLATION HELPERS
 
     The parent directory must already exist. Reading a missing registry
     creates an empty JSON file and therefore requires write permission.
-
-    Current limitation: registry initialization and updates are neither
-    atomic nor synchronized. Concurrent callers can lose updates or observe
-    incomplete data; callers must serialize all access externally.
+    Access is serialized through a persistent lock file, and updates replace
+    the registry atomically.
 
 SEE ALSO
     Module::Build::SysPath

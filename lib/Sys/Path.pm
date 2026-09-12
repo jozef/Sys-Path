@@ -12,6 +12,7 @@ use Digest::MD5 qw(md5_hex);
 use List::Util 'any', 'none';
 use Carp 'croak', 'confess';
 use Cwd 'cwd';
+use Fcntl 'LOCK_EX';
 
 use base 'Sys::Path::SPc';
 
@@ -108,22 +109,33 @@ sub install_checksums {
         'syspath',
         'install-checksums.json'
     );
+    my $lock_filename = $checksums_filename.'.lock';
+
+    open my $lock_fh, '>>', $lock_filename
+        or croak 'failed to open checksum lock file "'.$lock_filename.'": '.$!;
+    flock($lock_fh, LOCK_EX)
+        or croak 'failed to lock checksum registry "'.$lock_filename.'": '.$!;
+
+    my %conffiles_md5 = -f $checksums_filename
+        ? %{JSON::Util->decode([ $checksums_filename ])}
+        : ();
 
     if (@args) {
         print 'Updating ', $checksums_filename, "\n";
-        my %conffiles_md5 = (
-            $self->install_checksums,
-            @args,
+        %conffiles_md5 = (%conffiles_md5, @args);
+        JSON::Util->encode(
+            \%conffiles_md5,
+            [ $checksums_filename ],
+            { atomic => 1 },
         );
-        JSON::Util->encode(\%conffiles_md5, [ $checksums_filename ]);
         return %conffiles_md5;
     }
-    
+
     # Initialize the registry on first access, including reads.
-    JSON::Util->encode({}, [ $checksums_filename ])
+    JSON::Util->encode({}, [ $checksums_filename ], { atomic => 1 })
         if not -f $checksums_filename;
-    
-    return %{JSON::Util->decode([ $checksums_filename ])};
+
+    return %conffiles_md5;
 }
 
 
@@ -379,11 +391,8 @@ F<sharedstatedir/syspath/install-checksums.json>. With arguments, merge the
 supplied pairs into the registry and return the resulting pairs.
 
 The parent directory must already exist. Reading a missing registry creates an
-empty JSON file and therefore requires write permission.
-
-Current limitation: registry initialization and updates are neither atomic nor
-synchronized. Concurrent callers can lose updates or observe incomplete data;
-callers must serialize all access externally.
+empty JSON file and therefore requires write permission. Access is serialized
+through a persistent lock file, and updates replace the registry atomically.
 
 =head1 SEE ALSO
 
