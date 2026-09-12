@@ -7,7 +7,6 @@ use Test::More;
 use File::Path 'make_path';
 use File::Spec;
 use File::Temp;
-use Time::HiRes 'usleep';
 
 use FindBin '$Bin';
 use lib File::Spec->catfile($Bin, '..', 'lib');
@@ -80,37 +79,38 @@ my $registry_file = File::Spec->catfile(
     $registry_dir,
     'install-checksums.json',
 );
-my $temporary_file = $registry_file.'..TMP';
 ok(-f $registry_file.'.lock', 'checksum updates use a stable lock file');
 
-my %large_update = map { ("large-$_" => 'x' x 500) } 1 .. 20_000;
-my $reader_writer = fork();
-die "fork failed: $!" if not defined $reader_writer;
-if ($reader_writer == 0) {
-    Sys::Path->install_checksums(%large_update);
-    exit 0;
+my ($reader_writer, $reader_writer_gate) = start_paused_writer({
+    'during-update' => 'complete',
+});
+pipe(my $reader_ready, my $reader_signal) or die "pipe failed: $!";
+my $reader = fork();
+die "fork failed: $!" if not defined $reader;
+if ($reader == 0) {
+    close $reader_ready;
+    syswrite($reader_signal, '.', 1) == 1
+        or die "reader signal failed: $!";
+    my %during_update = Sys::Path->install_checksums;
+    exit($during_update{'during-update'} eq 'complete' ? 0 : 1);
 }
-wait_for_file($temporary_file, $reader_writer);
-my %during_update = Sys::Path->install_checksums;
+close $reader_signal;
+sysread($reader_ready, my $reader_started, 1) == 1
+    or die "reader did not start: $!";
+syswrite($reader_writer_gate, '.', 1) == 1
+    or die "failed to release writer: $!";
+close $reader_writer_gate;
 waitpid($reader_writer, 0);
 is($?, 0, 'writer observed by a concurrent reader exits successfully');
-is(
-    $during_update{'large-20000'},
-    'x' x 500,
-    'a reader waits for an active update and reads complete JSON',
-);
+waitpid($reader, 0);
+is($?, 0, 'a reader waits for an active update and reads complete JSON');
 
 Sys::Path->install_checksums('stable' => 'before-interruption');
-my $interrupted_writer = fork();
-die "fork failed: $!" if not defined $interrupted_writer;
-if ($interrupted_writer == 0) {
-    Sys::Path->install_checksums(
-        map { ("interrupted-$_" => 'y' x 500) } 1 .. 20_000,
-    );
-    exit 0;
-}
-wait_for_file($temporary_file, $interrupted_writer);
+my ($interrupted_writer, $interrupted_writer_gate) = start_paused_writer({
+    'interrupted' => 'must-not-replace-live-registry',
+});
 kill 'KILL', $interrupted_writer;
+close $interrupted_writer_gate;
 waitpid($interrupted_writer, 0);
 my %after_interruption = Sys::Path->install_checksums;
 is(
@@ -121,13 +121,32 @@ is(
 
 done_testing();
 
-sub wait_for_file {
-    my ($filename, $pid) = @_;
-    for (1 .. 1_000) {
-        return if -f $filename;
-        die "writer exited before creating $filename"
-            if waitpid($pid, 1) == $pid;
-        usleep(10_000);
+sub start_paused_writer {
+    my ($update) = @_;
+    pipe(my $ready_reader, my $ready_writer) or die "pipe failed: $!";
+    pipe(my $gate_reader, my $gate_writer) or die "pipe failed: $!";
+    my $pid = fork();
+    die "fork failed: $!" if not defined $pid;
+    if ($pid == 0) {
+        close $ready_reader;
+        close $gate_writer;
+        my $original_open = \&IO::AtomicFile::open;
+        no warnings 'redefine';
+        local *IO::AtomicFile::open = sub {
+            my $fh = $original_open->(@_);
+            syswrite($ready_writer, '.', 1) == 1
+                or die "writer signal failed: $!";
+            sysread($gate_reader, my $release, 1) == 1
+                or die "writer release failed: $!";
+            return $fh;
+        };
+        Sys::Path->install_checksums(%{$update});
+        exit 0;
     }
-    die "timed out waiting for $filename";
+    close $ready_writer;
+    close $gate_reader;
+    sysread($ready_reader, my $ready, 1) == 1
+        or die "writer did not pause during atomic publication: $!";
+    close $ready_reader;
+    return ($pid, $gate_writer);
 }

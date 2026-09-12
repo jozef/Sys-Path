@@ -3,6 +3,7 @@ package inc::MyBuilder;
 use strict;
 use warnings;
 
+use B 'perlstring';
 use File::Spec;
 use ExtUtils::Install;
 use base 'Module::Build';
@@ -24,7 +25,7 @@ sub ACTION_build {
 	while (my $line = <$config_fh>) {
 		next if ($line =~ m/# remove after install$/);
 		if ($line =~ m/^sub \s+ ($path_types) \s* {/xms) {
-			$line = 'sub '.$1." {'".$notes{$1}."'};"."\n"
+			$line = 'sub '.$1.' {'.perlstring($notes{$1}).'};'."\n"
 				if exists $notes{$1};
 		}
 		print $blib_config_fh $line;
@@ -70,11 +71,8 @@ C<Sys::Path::SPc> module and prepares its shared-state directory.
 Run the parent build action, then regenerate the built C<Sys::Path::SPc> from
 the source module. Lines ending in C<# remove after install> are omitted, and
 each configured path accessor is replaced with a constant from the builder
-notes. The generated file is made read-only.
-
-Current limitation: path values are inserted into single-quoted Perl literals
-without escaping. A value containing an apostrophe or backslash can produce
-invalid code or a value different from the configured path.
+notes. Path values are encoded as Perl string literals so quotes and
+backslashes remain valid. The generated file is made read-only.
 
 =head2 ACTION_install
 
