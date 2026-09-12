@@ -6,8 +6,7 @@ Revision history for Sys-Path
         - Honored configured shared-state paths during installation
         - Aligned build options with path accessors while preserving aliases
         - Used the user's login shell when examining configuration changes
-        - Propagated errors raised while loading modules to find their
-          distribution roots
+        - Located module distribution roots without loading the modules
         - Added syspath.pl to print configured path keys and values
 
 0.16    13 October 2017

@@ -6,7 +6,6 @@ use warnings;
 use Test::More 'no_plan';
 #use Test::More tests => 10;
 use Test::Differences;
-use Test::Exception;
 
 use File::Temp;
 use File::Path 'make_path';
@@ -65,12 +64,12 @@ sub main {
     like(Sys::Path->find_distribution_root('TestDR::build'), qr/v1$/, 'find_distribution_root()');
     like(Sys::Path->find_distribution_root('TestDR::makefile'), qr/v2$/, 'find_distribution_root()');
     like(Sys::Path->find_distribution_root('TestDR::F::F2::t'), qr/v3$/, 'find_distribution_root()');
+    like(
+        Sys::Path->find_distribution_root('TestDR::broken'),
+        qr/v4$/,
+        'find_distribution_root locates a module without loading it',
+    );
     is(Sys::Path->find_distribution_root('TestDR::non-existing'), File::Spec->canonpath(cwd), 'start at cwd for the rest');
-    throws_ok {
-        Sys::Path->find_distribution_root('TestDR::broken')
-    } qr/intentional module load failure/,
-        'find_distribution_root propagates module load failures';
-    
     my $prompt_reply;
     my $output = capture_merged {
         $prompt_reply = Sys::Path->prompt_cfg_file_changed('src', 'dst', sub { 'Y' })

@@ -39,13 +39,13 @@ my $builder = inc::MyBuilder->new(
         'Digest::MD5'     => 0,
         'Cwd'             => 0,
         'Shell::Guess'    => 0,
+        'Module::Path'    => 0,
     },
     build_requires => {
         'Test::More'      => 0,
         'File::Temp'      => 0,
         'File::Path'      => 2.07,    # Introduce make_path() and rm_tree() API extension.
         'Test::Differences' => 0,
-        'Test::Exception' => 0,
         'Capture::Tiny'   => 0,
     },
     add_to_cleanup      => [ 'Sys-Path-*' ],

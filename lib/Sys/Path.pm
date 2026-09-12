@@ -15,6 +15,7 @@ use Carp 'croak', 'confess';
 use Cwd 'cwd';
 use Fcntl 'LOCK_EX';
 use Shell::Guess;
+use Module::Path qw(module_path);
 
 use base 'Sys::Path::SPc';
 
@@ -25,18 +26,10 @@ sub find_distribution_root {
     croak 'pass module_name as argument'
         if not $module_name;
     
-    my $module_filename = $module_name.'.pm';
-    $module_filename =~ s{::}{/}g;
-    unless ($INC{$module_filename}) {
-        eval { require $module_filename };
-        die $@
-            if $@ and $@ !~ /\ACan't locate \Q$module_filename\E in \@INC\b/;
-    }
+    my $module_filename = module_path($module_name);
     
     my @path;
-    if ($INC{$module_filename}) {
-        $module_filename = File::Spec->rel2abs($INC{$module_filename});
-        
+    if ($module_filename) {
         @path = File::Spec->splitdir($module_filename);
         my @package_names = split('::',$module_name);
         # Remove the module filename and its namespace directories.
