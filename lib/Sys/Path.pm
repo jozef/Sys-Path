@@ -8,6 +8,7 @@ our $VERSION = '0.17';
 use File::Spec;
 use Text::Diff 'diff';
 use JSON::Util;
+use IO::Any;
 use Digest::MD5 qw(md5_hex);
 use List::Util 'any', 'none';
 use Carp 'croak', 'confess';
@@ -396,7 +397,9 @@ supplied pairs into the registry and return the resulting pairs.
 
 The parent directory must already exist. Reading a missing registry creates an
 empty JSON file and therefore requires write permission. Access is serialized
-through a persistent lock file, and updates replace the registry atomically.
+through a persistent lock file, and C<IO::Any> replaces the registry through
+its atomic-output mode. The lock coordinates cooperating callers; lock and
+replacement failures from the host platform are propagated.
 
 =head1 SEE ALSO
 

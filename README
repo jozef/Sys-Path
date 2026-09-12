@@ -231,8 +231,10 @@ BUILD AND INSTALLATION HELPERS
 
     The parent directory must already exist. Reading a missing registry
     creates an empty JSON file and therefore requires write permission.
-    Access is serialized through a persistent lock file, and updates replace
-    the registry atomically.
+    Access is serialized through a persistent lock file, and "IO::Any"
+    replaces the registry through its atomic-output mode. The lock
+    coordinates cooperating callers; lock and replacement failures from the
+    host platform are propagated.
 
 SEE ALSO
     Module::Build::SysPath
