@@ -8,6 +8,20 @@ use FindBin '$Bin';
 use lib File::Spec->catdir($Bin, 'lib');
 use Sys::Path::SPc;
 
+my @path_types = Sys::Path::SPc->_path_types;
+my %option_aliases = (
+    cachedir       => 'cache',
+    logdir         => 'log',
+    spooldir       => 'spool',
+    rundir         => 'run',
+    lockdir        => 'lock',
+    sharedstatedir => 'state',
+);
+my %path_options = map { ('sp-'.$_ => { type => '=s' }) } @path_types;
+my %alias_options = map {
+    ('sp-'.$option_aliases{$_} => { type => '=s' })
+} keys %option_aliases;
+
 my $builder = inc::MyBuilder->new(
     module_name         => 'Sys::Path',
     license             => 'perl',
@@ -35,19 +49,7 @@ my $builder = inc::MyBuilder->new(
     },
     add_to_cleanup      => [ 'Sys-Path-*' ],
     create_readme       => 1,
-    get_options         => {
-        'sp-prefix'        => { type => '=s' },
-        'sp-localstatedir' => { type => '=s' },
-        'sp-sysconfdir'    => { type => '=s' },
-        'sp-datadir'       => { type => '=s' },
-        'sp-docdir'        => { type => '=s' },
-        'sp-cache'         => { type => '=s' },
-        'sp-log'           => { type => '=s' },
-        'sp-spool'         => { type => '=s' },
-        'sp-run'           => { type => '=s' },
-        'sp-lock'          => { type => '=s' },
-        'sp-state'         => { type => '=s' },
-    },
+    get_options         => { %path_options, %alias_options },
     meta_merge => {
         resources => {
             repository => 'git://github.com/jozef/Sys-Path.git',
@@ -60,7 +62,6 @@ my $builder = inc::MyBuilder->new(
     },
 );
 
-my @path_types = Sys::Path::SPc->_path_types;
 $builder->notes('path_types' => join('|', @path_types));
 
 print qq{
@@ -77,6 +78,8 @@ http://search.cpan.org/perldoc?Sys%3A%3APath#PATHS
 
 foreach my $path_type (@path_types) {
     my $path = $builder->args('sp-'.$path_type);
+    $path = $builder->args('sp-'.$option_aliases{$path_type})
+        if not defined($path) and exists($option_aliases{$path_type});
     $path = $builder->prompt($path_type, Sys::Path::SPc->$path_type)
         if not $path;
     Sys::Path::SPc->$path_type($path);

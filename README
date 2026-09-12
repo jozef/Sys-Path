@@ -58,6 +58,10 @@ BUILD TIME CONFIGURATION
             --sp-sysconfdir=/usr/local/etc \
             --sp-localstatedir=/var/local
 
+    Each accessor has a canonical "--sp-<accessor>" option. The legacy
+    "--sp-cache", "--sp-log", "--sp-spool", "--sp-run", "--sp-lock", and
+    "--sp-state" aliases remain available.
+
 STATUS
     Sys::Path was published as an experiment in system-path configuration,
     build system integration, and path naming. The original documentation

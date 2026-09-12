@@ -3,6 +3,7 @@ Revision history for Sys-Path
         - Serialized checksum-registry access and published updates atomically
         - Preserved quotes and backslashes in generated path constants
         - Honored configured shared-state paths during installation
+        - Aligned build options with path accessors while preserving aliases
 
 0.16    13 October 2017
         - Fixed builds when Perl omits "." from @INC

@@ -209,6 +209,10 @@ methods with L<Module::Build>.
         --sp-sysconfdir=/usr/local/etc \
         --sp-localstatedir=/var/local
 
+Each accessor has a canonical C<--sp-E<lt>accessorE<gt>> option. The legacy
+C<--sp-cache>, C<--sp-log>, C<--sp-spool>, C<--sp-run>, C<--sp-lock>, and
+C<--sp-state> aliases remain available.
+
 =head1 STATUS
 
 Sys::Path was published as an experiment in system-path configuration, build
