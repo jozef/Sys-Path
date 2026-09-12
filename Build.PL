@@ -37,7 +37,6 @@ my $builder = inc::MyBuilder->new(
         'JSON::Util'      => '0.06',
         'IO::Any'         => '0.09',
         'Digest::MD5'     => 0,
-        'Text::Diff'      => 0,
         'Cwd'             => 0,
         'Shell::Guess'    => 0,
     },

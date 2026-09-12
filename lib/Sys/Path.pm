@@ -118,9 +118,17 @@ sub install_checksums {
     my $lock_filename = $checksums_filename.'.lock';
 
     open my $lock_fh, '>>', $lock_filename
-        or croak 'failed to open checksum lock file "'.$lock_filename.'": '.$!;
+        or croak sprintf(
+            'failed to open checksum lock file "%s": %s',
+            $lock_filename,
+            $!,
+        );
     flock($lock_fh, LOCK_EX)
-        or croak 'failed to lock checksum registry "'.$lock_filename.'": '.$!;
+        or croak sprintf(
+            'failed to lock checksum registry "%s": %s',
+            $lock_filename,
+            $!,
+        );
 
     my %conffiles_md5 = -f $checksums_filename
         ? %{JSON::Util->decode([ $checksums_filename ])}
