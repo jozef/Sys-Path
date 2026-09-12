@@ -13,3 +13,6 @@
 /cover_db
 /tmp/*
 /Sys-Path-*
+/.tracker.json
+/TODO.md
+/docs/todo

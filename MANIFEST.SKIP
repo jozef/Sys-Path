@@ -31,6 +31,10 @@
 ^tmp/
 .*\.tar\.gz
 ^MYMETA.yml$
+^AGENTS.md$
+^TODO.md$
+^.tracker.json$
+^docs/todo/
 ^Sys-Path-
 
 ^MYMETA\.json$
